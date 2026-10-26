@@ -1,0 +1,25 @@
+{
+  "name": "runtime3d-architecture-engine",
+  "version": "1.0.0",
+  "description": "Universal 3D & 2D Runtime Architecture Visualizer & Live Data Flow Simulator for any project or codebase.",
+  "main": "server.js",
+  "bin": {
+    "runtime3d": "./cli.js"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "analyze": "node cli.js",
+    "deploy": "npx vercel --prod"
+  },
+  "keywords": [
+    "runtime3d",
+    "system-architecture",
+    "3d-visualization",
+    "runtime-data-flow",
+    "live-simulation",
+    "trust-boundaries",
+    "codebase-analyzer"
+  ],
+  "author": "Antigravity Engineering",
+  "license": "MIT"
+}

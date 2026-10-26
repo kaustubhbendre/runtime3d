@@ -1,0 +1,3207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Runtime3D - Interactive 3D Architecture Visualizer & Live Data Simulator</title>
+  
+  <!-- Search Engine Optimization (SEO) Meta Tags -->
+  <meta name="description" content="Runtime3D transforms any project codebase into an interactive 3D runtime architecture diagram with trust boundaries, live simulated data packets, and disaster recovery vault.">
+  <meta name="keywords" content="architecture diagram, 3d software architecture, system design visualizer, data flow simulator, cloud architecture, devops tool, microservices diagram, live telemetry">
+  <meta name="author" content="Runtime3D Platform">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <link rel="canonical" href="https://runtime3d.vercel.app">
+
+  <!-- OpenGraph (OG) Social Media Cards -->
+  <meta property="og:locale" content="en_US">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Runtime3D - Interactive 3D Architecture Visualizer & Live Data Simulator">
+  <meta property="og:description" content="Turn any codebase into an interactive 3D runtime architecture model with live animated data simulations, chaos engineering, and instant recovery.">
+  <meta property="og:url" content="https://runtime3d.vercel.app">
+  <meta property="og:site_name" content="Runtime3D">
+
+  <!-- Twitter Card Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Runtime3D - Interactive 3D Architecture Visualizer">
+  <meta name="twitter:description" content="Turn any codebase into an interactive 3D runtime architecture model with live data flow simulation and disaster recovery.">
+
+  <!-- Google Structured Data (JSON-LD) for Rich Search Snippets -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Runtime3D",
+    "url": "https://runtime3d.vercel.app",
+    "description": "Universal 3D software architecture visualizer with real-time data flow simulations, chaos engineering, and disaster recovery vault.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "All",
+    "inLanguage": "en",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230a101f' stroke='%231e293b' stroke-width='2'/%3E%3Cpolygon points='32,10 52,21 32,32 12,21' fill='%2338bdf8' fill-opacity='0.3' stroke='%2338bdf8' stroke-width='2.5'/%3E%3Cpolygon points='12,21 32,32 32,54 12,43' fill='%238b5cf6' fill-opacity='0.2' stroke='%238b5cf6' stroke-width='2'/%3E%3Cpolygon points='32,32 52,21 52,43 32,54' fill='%2306b6d4' fill-opacity='0.2' stroke='%2306b6d4' stroke-width='2'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%2322d3ee'/%3E%3C/svg%3E">
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070b13;
+      --grid-dot: #1e293b;
+      --card-bg: #0d1526;
+      --card-border: #1e293b;
+      --cyan-neon: #06b6d4;
+      --teal-neon: #14b8a6;
+      --amber-neon: #f59e0b;
+      --rose-neon: #f43f5e;
+      --purple-neon: #a855f7;
+      --blue-neon: #3b82f6;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-dark);
+      color: #e2e8f0;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Dotted Matrix Blueprint Grid */
+    .blueprint-grid {
+      background-color: #070b13;
+      background-image: radial-gradient(rgba(56, 189, 248, 0.16) 1.2px, transparent 1.2px),
+                        radial-gradient(rgba(148, 163, 184, 0.05) 1.2px, transparent 1.2px);
+      background-size: 32px 32px, 8px 8px;
+      background-position: 0 0, 16px 16px;
+    }
+
+    /* 3D Scene Viewport & Matrix */
+    .scene-3d-wrapper {
+      perspective: 1400px;
+      perspective-origin: 50% 45%;
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .diagram-plane {
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+
+    .isometric-3d {
+      transform: rotateX(46deg) rotateZ(-22deg) scale(0.92) translateZ(0px);
+    }
+
+    .flat-2d {
+      transform: rotateX(0deg) rotateZ(0deg) scale(1) translateZ(0px);
+    }
+
+    /* 3D Elevated Cards */
+    .node-card {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transform-style: preserve-3d;
+      background: rgba(13, 21, 38, 0.94);
+      backdrop-filter: blur(10px);
+    }
+
+    .node-card:hover {
+      transform: translateZ(28px) scale(1.04);
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.75),
+                  0 0 25px rgba(6, 182, 212, 0.4);
+    }
+
+    .node-card.selected {
+      transform: translateZ(35px) scale(1.05);
+      border-color: #38bdf8 !important;
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.6), inset 0 0 15px rgba(56, 189, 248, 0.2) !important;
+    }
+
+    .node-card.active-pulse {
+      animation: pulseGlow 1.3s infinite alternate;
+    }
+
+    .node-card.failed-node {
+      border-color: #f43f5e !important;
+      background: rgba(88, 28, 28, 0.7) !important;
+      box-shadow: 0 0 40px rgba(244, 63, 94, 0.85), inset 0 0 20px rgba(244, 63, 94, 0.5) !important;
+      animation: chaosPulse 0.7s infinite alternate !important;
+    }
+    @keyframes chaosPulse {
+      0% { box-shadow: 0 0 15px rgba(244, 63, 94, 0.6); }
+      100% { box-shadow: 0 0 45px rgba(244, 63, 94, 1), 0 0 25px #f43f5e; }
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
+      100% { box-shadow: 0 0 45px rgba(6, 182, 212, 0.95), 0 0 20px #38bdf8; }
+    }
+
+    /* Glowing Data Conduits */
+    .pipeline-wire {
+      fill: none;
+      stroke: #1e293b;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.3s;
+    }
+
+    .pipeline-wire.primary {
+      stroke: rgba(6, 182, 212, 0.6);
+      stroke-width: 2.8;
+      filter: drop-shadow(0 0 7px rgba(6, 182, 212, 0.45));
+    }
+
+    .pipeline-wire.active-wire {
+      stroke: #38bdf8;
+      stroke-width: 3.4;
+      filter: drop-shadow(0 0 12px #38bdf8);
+    }
+
+    .pipeline-wire.dashed-wire {
+      stroke-dasharray: 6 5;
+    }
+
+    /* Trust Boundaries */
+    .boundary-box {
+      border-radius: 18px;
+      transition: all 0.3s;
+    }
+
+    .boundary-browser {
+      border: 1.5px dashed #f59e0b;
+      background: radial-gradient(ellipse at 50% 20%, rgba(245, 158, 11, 0.05), transparent 80%),
+                  rgba(15, 23, 42, 0.35);
+      box-shadow: 0 0 35px -5px rgba(245, 158, 11, 0.15);
+    }
+
+    .boundary-cloud {
+      border: 1.5px dashed #f43f5e;
+      background: radial-gradient(ellipse at 50% 20%, rgba(244, 63, 94, 0.06), transparent 80%),
+                  rgba(15, 23, 42, 0.35);
+      box-shadow: 0 0 35px -5px rgba(244, 63, 94, 0.15);
+    }
+
+    /* Custom Glass Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070b13;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
+    /* Floating Toast */
+    .toast-pill {
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes toastIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="bg-[#070b13] text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden blueprint-grid">
+
+  <!-- ================= TOP NAVIGATION & COMMAND BAR ================= -->
+  <header class="border-b border-slate-800/80 bg-[#080d1a]/95 backdrop-blur-md sticky top-0 z-50 px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-2xl">
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2.5">
+        <!-- Logo -->
+        <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-teal-400 to-indigo-600 p-[1.5px] shadow-lg shadow-cyan-500/20">
+          <div class="h-full w-full bg-[#080d1a] rounded-[10px] flex items-center justify-center">
+            <svg class="w-4 h-4 text-cyan-400 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+            </svg>
+          </div>
+        </div>
+        
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base font-extrabold tracking-tight text-white flex items-center gap-1">
+              Runtime<span class="text-cyan-400">3D</span>
+            </h1>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-400 border border-cyan-800/80 font-mono-code font-bold tracking-wider">
+              ENTERPRISE ENGINE
+            </span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-mono-code">
+            Auto-Synthesize 3D Runtimes from Any Project Folder or Repo
+          </p>
+        </div>
+      </div>
+
+      <!-- Architecture Profile / Project Selector -->
+      <div class="hidden xl:flex items-center gap-2 pl-3 border-l border-slate-800">
+        <span class="text-xs text-slate-400 font-mono-code font-bold">PROFILE:</span>
+        <select id="project-profile-select" onchange="switchArchitectureProfile()" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-cyan-300 font-mono-code focus:outline-none focus:border-cyan-500">
+          <option value="reference_app">Full-Stack SPA + Managed DB (React + Supabase RLS)</option>
+          <option value="microservices_app">E-Commerce Microservices (Next.js + Express + Redis + Stripe)</option>
+          <option value="ai_agent_app">Autonomous AI Agent Platform (FastAPI + Vector DB + Celery)</option>
+          <option value="custom_uploaded" disabled>Custom Uploaded Project (Drop folder to load)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Center Control Bar: Start Simulation / Omni Test / Scenario -->
+    <div class="flex items-center gap-2 bg-slate-900/90 p-1 rounded-xl border border-slate-800 shadow-inner">
+      <button id="btn-start-sim" onclick="toggleSimulation()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-lg bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 shadow-cyan-500/25 active:scale-95">
+        <svg id="sim-icon" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        <span id="sim-btn-text">START SIMULATION</span>
+      </button>
+
+      <!-- TEST ALL AREAS BUTTON -->
+      <button id="btn-omni-test" onclick="runOmniAreaTest()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-950 hover:bg-indigo-900 text-indigo-300 border border-indigo-700/80 active:scale-95 shadow-lg shadow-indigo-950/30" title="Verify all 10 nodes and all quadrants simultaneously">
+        <svg class="w-3.5 h-3.5 text-indigo-400 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        <span>⚡ TEST ALL</span>
+      </button>
+
+      <!-- CHAOS ENGINEERING / FAULT INJECTION BUTTON -->
+      <button id="btn-chaos-mode" onclick="toggleChaosMode()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-700/80 active:scale-95 shadow-lg shadow-rose-950/30" title="Simulate service outages and failover pathways">
+        <svg class="w-3.5 h-3.5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <span id="chaos-btn-text">💥 CHAOS MODE</span>
+      </button>
+
+      <button onclick="resetSimulation()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-xs transition" title="Reset Simulation">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </button>
+
+      <div class="h-4 w-[1px] bg-slate-800 mx-0.5"></div>
+
+      <!-- Flow Scenario Selector -->
+      <div class="flex items-center gap-1.5 text-xs text-slate-300">
+        <span class="text-slate-400 font-mono-code text-[11px] hidden sm:inline">TRACE:</span>
+        <select id="scenario-select" onchange="changeScenario()" class="bg-slate-950 border border-slate-700/80 rounded-lg px-2 py-1 text-xs text-cyan-300 font-mono-code focus:outline-none focus:border-cyan-500">
+          <option value="primary">1. ★ Full System Flow (All 10 Areas & Quadrants)</option>
+          <option value="admin">2. Admin Ops Flow: Login -> Data Layer -> DB</option>
+          <option value="fallback">3. Fallback Path: Offline Store / Circuit Breaker</option>
+        </select>
+      </div>
+
+      <div class="h-4 w-[1px] bg-slate-800 mx-0.5"></div>
+
+      <!-- Speed Control with High Load Surge -->
+      <div class="flex items-center gap-0.5">
+        <button onclick="setSimSpeed(0.5)" id="speed-05" class="px-1.5 py-0.5 text-[11px] rounded text-slate-400 hover:text-white font-mono-code">0.5x</button>
+        <button onclick="setSimSpeed(1)" id="speed-1" class="px-1.5 py-0.5 text-[11px] rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-mono-code font-bold">1x</button>
+        <button onclick="setSimSpeed(2)" id="speed-2" class="px-1.5 py-0.5 text-[11px] rounded text-slate-400 hover:text-white font-mono-code">2x</button>
+        <button onclick="toggleSurgeMode()" id="speed-surge" class="px-2 py-0.5 text-[11px] rounded bg-amber-950 text-amber-300 border border-amber-800 hover:bg-amber-900 font-mono-code font-bold" title="High-Load Traffic Surge (500 req/sec)">⚡ SURGE</button>
+      </div>
+    </div>
+
+    <!-- Right Controls: FinOps, Sound, Export, 2D/3D, DB, Upload, History, Auth -->
+    <div class="flex items-center gap-2">
+      <!-- Real-Time Cloud FinOps & APM Metrics -->
+      <button onclick="openFinOpsModal()" class="hidden lg:flex items-center gap-2 bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 hover:border-cyan-500/80 px-2.5 py-1.5 rounded-lg text-xs font-mono-code transition shadow-sm" title="Click to view Cloud Cost & Latency Explorer">
+        <span class="flex items-center gap-1 text-slate-300">
+          <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Est: <strong id="header-cost-val" class="text-emerald-400 font-bold">$148/mo</strong>
+        </span>
+        <span class="text-slate-600">|</span>
+        <span class="text-slate-300">p95: <strong class="text-cyan-400 font-bold">38ms</strong></span>
+      </button>
+
+      <!-- Audio Synthesizer Toggle -->
+      <button id="sound-toggle-btn" onclick="toggleAudio()" class="p-1.5 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition" title="Toggle Futuristic Cyber Audio FX">
+        <svg id="sound-icon-on" class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+        </svg>
+        <svg id="sound-icon-off" class="w-4 h-4 text-slate-500 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z M18 10l-6 6 M12 10l6 6"/>
+        </svg>
+      </button>
+
+      <!-- Export Suite Dropdown -->
+      <div class="relative">
+        <button onclick="toggleExportMenu()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition">
+          <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+          </svg>
+          <span>Export ▾</span>
+        </button>
+        <div id="export-dropdown-menu" class="hidden absolute right-0 mt-1 w-56 bg-[#0c1426] border border-slate-700 rounded-xl shadow-2xl py-1 z-50 text-xs backdrop-blur-md">
+          <button onclick="exportDiagramPng()" class="w-full text-left px-3 py-2 text-slate-200 hover:bg-slate-800 flex items-center gap-2">
+            <span>📸</span> Export Architecture (PNG)
+          </button>
+          <button onclick="downloadDockerCompose()" class="w-full text-left px-3 py-2 text-slate-200 hover:bg-slate-800 flex items-center gap-2">
+            <span>🐳</span> Generate docker-compose.yml
+          </button>
+          <button onclick="downloadArchMarkdown()" class="w-full text-left px-3 py-2 text-slate-200 hover:bg-slate-800 flex items-center gap-2">
+            <span>📋</span> Export Spec (ARCHITECTURE.md)
+          </button>
+        </div>
+      </div>
+      <!-- 3D / 2D View Switcher -->
+      <div class="flex items-center bg-slate-900 border border-slate-800 p-0.5 rounded-lg">
+        <button id="mode-2d-btn" onclick="setViewMode('2d')" class="px-2.5 py-1 rounded-md text-xs font-semibold transition text-slate-400 hover:text-white flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          2D
+        </button>
+        <button id="mode-3d-btn" onclick="setViewMode('3d')" class="px-2.5 py-1 rounded-md text-xs font-semibold transition bg-cyan-900/60 text-cyan-300 border border-cyan-700/60 shadow flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+          </svg>
+          3D
+        </button>
+      </div>
+
+      <!-- Live Database Viewer Trigger -->
+      <button onclick="toggleDbModal()" class="px-2.5 py-1.5 rounded-lg bg-purple-950/60 hover:bg-purple-900/60 text-purple-300 border border-purple-800/80 text-xs font-semibold flex items-center gap-1.5 transition">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+        </svg>
+        Database (<span id="db-count-badge" class="font-mono-code font-bold text-white">4</span>)
+      </button>
+
+      <!-- UPLOAD PROJECT FOLDER (PRIMARY CTA) -->
+      <button onclick="toggleUploadModal()" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-cyan-600/20 transition active:scale-95">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+        </svg>
+        Upload Project
+      </button>
+
+      <!-- ================= USER AUTH & HISTORY SECTION ================= -->
+      <!-- Logged Out View -->
+      <div id="logged-out-view" class="flex items-center gap-1.5 pl-2 border-l border-slate-800">
+        <button onclick="openAuthModal('login')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1 transition">
+          <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+          </svg>
+          Sign In
+        </button>
+        <button onclick="openAuthModal('register')" class="px-2.5 py-1.5 rounded-lg bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 text-xs font-semibold transition">
+          Register
+        </button>
+      </div>
+
+      <!-- Logged In View -->
+      <div id="logged-in-view" class="hidden flex items-center gap-1.5 pl-2 border-l border-slate-800">
+        <!-- Save Snapshot Button -->
+        <button onclick="openSaveSnapshotModal()" class="px-2.5 py-1.5 rounded-lg bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 text-xs font-semibold flex items-center gap-1 transition" title="Save Architecture Snapshot">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+          </svg>
+          <span>Save</span>
+        </button>
+
+        <!-- History Recovery Drawer Button -->
+        <button onclick="toggleHistoryModal()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition" title="Architecture Recovery Vault">
+          <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>History</span>
+          <span id="user-history-badge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono-code font-bold">3</span>
+        </button>
+
+        <!-- Admin Portal Button (visible to Admin) -->
+        <button id="admin-portal-btn" onclick="toggleAdminModal()" class="hidden px-2.5 py-1.5 rounded-lg bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 text-xs font-semibold flex items-center gap-1 transition" title="Admin Monitoring Console">
+          <svg class="w-3.5 h-3.5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+          </svg>
+          <span>Admin</span>
+        </button>
+
+        <!-- User Profile Pill -->
+        <div class="flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-lg px-2 py-1">
+          <div id="user-avatar" class="w-5 h-5 rounded-full bg-cyan-600 text-slate-950 font-bold text-[10px] flex items-center justify-center">A</div>
+          <span id="user-display-name" class="text-xs font-bold text-slate-200">alex_architect</span>
+        </div>
+
+        <!-- Logout Button -->
+        <button onclick="handleLogout()" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition" title="Sign Out">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN VISUALIZATION CANVAS ================= -->
+  <main class="relative flex-1 w-full overflow-hidden flex items-center justify-center p-4 min-h-[720px]">
+
+    <!-- 3D Scene Viewport -->
+    <div id="scene-viewport" class="scene-3d-wrapper w-full h-full flex items-center justify-center">
+      
+      <!-- Transform Plane containing SVG conduits & HTML Nodes -->
+      <div id="diagram-plane" class="diagram-plane isometric-3d relative w-[1240px] h-[680px]">
+
+        <!-- ================= DYNAMIC SVG PIPELINES & CONDUITS ================= -->
+        <svg id="svg-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 1240 680">
+          <defs>
+            <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+            <filter id="glow-pulse" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="5" result="blur2" />
+              <feComposite in="SourceGraphic" in2="blur2" operator="over" />
+            </filter>
+
+            <!-- Arrow Markers -->
+            <marker id="arrow-cyan" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#06b6d4" />
+            </marker>
+            <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#f59e0b" />
+            </marker>
+            <marker id="arrow-rose" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#f43f5e" />
+            </marker>
+            <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#a855f7" />
+            </marker>
+            <marker id="arrow-gray" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#64748b" />
+            </marker>
+          </defs>
+
+          <!-- SVG Wires rendered dynamically by JS -->
+          <g id="svg-wires-group"></g>
+
+          <!-- Animated Flying Packet Carrier -->
+          <g id="animated-packet-group" opacity="0">
+            <circle id="packet-halo" r="14" fill="rgba(6, 182, 212, 0.3)" filter="url(#glow-pulse)" />
+            <circle id="packet-core" r="6" fill="#38bdf8" filter="url(#glow-cyan)" />
+            <text id="packet-tag" y="-12" fill="#38bdf8" font-size="10" font-family="'JetBrains Mono'" font-weight="bold" text-anchor="middle">PAYLOAD</text>
+          </g>
+        </svg>
+
+        <!-- ================= TRUST BOUNDARIES LAYER ================= -->
+        <div id="boundaries-container" class="absolute inset-0 pointer-events-none z-0"></div>
+
+        <!-- ================= CORE COMPONENTS NODES LAYER ================= -->
+        <div id="nodes-container" class="absolute inset-0 z-20 pointer-events-auto"></div>
+
+      </div>
+    </div>
+
+    <!-- ================= ACTIVE LIVE STEP BANNER (TOP-CENTER) ================= -->
+    <div id="live-step-banner" class="absolute top-4 left-1/2 -translate-x-1/2 bg-[#0c1426]/90 border border-cyan-500/40 rounded-full px-5 py-2 shadow-2xl backdrop-blur-md z-30 font-mono-code text-xs flex items-center gap-3 transition-all pointer-events-none">
+      <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+      <span id="live-step-text" class="text-cyan-200 font-medium">Ready • Click 'START SIMULATION' to trace live runtime packets</span>
+    </div>
+
+    <!-- ================= CHAOS MODE ACTIVE WARNING BANNER ================= -->
+    <div id="chaos-banner" class="hidden absolute top-16 left-1/2 -translate-x-1/2 bg-rose-950/95 border border-rose-500/80 rounded-full px-5 py-2 shadow-2xl backdrop-blur-md z-30 font-mono-code text-xs flex items-center gap-3 transition-all">
+      <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+      <span class="text-rose-200 font-bold">⚠️ CHAOS MODE ACTIVE: Click any node to inject failure</span>
+      <button onclick="healAllNodes()" class="ml-2 px-2.5 py-0.5 rounded-full bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-700 text-[10px] font-bold transition">
+        ✨ Heal All Nodes
+      </button>
+    </div>
+
+    <!-- ================= RELOCATED & COLLAPSIBLE RUNTIME TELEMETRY HUD (BOTTOM-RIGHT) ================= -->
+    <div id="telemetry-panel" class="absolute bottom-4 right-6 w-[370px] bg-[#0c1324]/95 border border-slate-800 rounded-xl p-3.5 shadow-2xl backdrop-blur-md z-30 font-mono-code transition-all duration-300">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="toggleHudCollapse()">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          <span class="text-xs font-bold text-slate-200">RUNTIME TELEMETRY</span>
+          <span id="hud-status" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-cyan-400 font-bold ml-1">IDLE</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button onclick="toggleHudPosition()" class="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 text-[10px]" title="Toggle Dock Position (Bottom-Right / Bottom-Center / Top-Right)">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+            </svg>
+          </button>
+          <button onclick="clearHudLog()" class="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 text-[10px]" title="Clear Console Log">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+          <button id="btn-hud-collapse" onclick="toggleHudCollapse()" class="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 text-[10px]" title="Minimize / Expand">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="hud-body-content" class="transition-all">
+        <div id="hud-log" class="text-[11px] text-slate-400 space-y-1.5 max-h-[110px] overflow-y-auto pr-1">
+          <div class="text-slate-500">> Ready. Click "START SIMULATION" to watch data pass between nodes into the database.</div>
+        </div>
+
+        <!-- Live Payload Preview Box -->
+        <div id="hud-payload-box" class="mt-2.5 pt-2 border-t border-slate-800/80 text-[10px] text-slate-400 hidden">
+          <div class="text-slate-500 font-bold mb-1">INSPECTOR PACKET PAYLOAD:</div>
+          <pre id="hud-payload-json" class="bg-slate-950 p-2 rounded text-cyan-300 overflow-x-auto text-[10px] leading-tight"></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= COMPONENT DETAIL INSPECTOR CARD ================= -->
+    <div id="detail-drawer" class="absolute top-6 right-6 w-[390px] bg-[#0d1629]/98 border border-cyan-500/40 rounded-2xl p-5 shadow-2xl backdrop-blur-xl z-40 transition-all duration-300 transform translate-x-[430px] opacity-0 pointer-events-none">
+      <div class="flex items-start justify-between border-b border-slate-800 pb-3 mb-4">
+        <div>
+          <span id="card-badge" class="text-[10px] font-mono-code px-2 py-0.5 rounded bg-teal-950 text-teal-400 border border-teal-800 font-bold">SRC 2</span>
+          <h3 id="card-title" class="text-lg font-bold text-white mt-1">Component Details</h3>
+          <p id="card-subtitle" class="text-xs text-slate-400 font-mono-code">Runtime Spec</p>
+        </div>
+        <button onclick="closeInspector()" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="text-[11px] font-bold text-slate-400 font-mono-code uppercase tracking-wider">Source File Location</label>
+          <div id="card-filepath" class="mt-1 p-2 rounded-lg bg-slate-950 font-mono-code text-cyan-300 border border-slate-800/80 text-[11px] break-all">
+            src/lib/supabase.js
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[11px] font-bold text-slate-400 font-mono-code uppercase tracking-wider">Trust Boundary</label>
+          <div id="card-trust" class="mt-1 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <span class="text-slate-300 font-medium">Browser: untrusted client</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[11px] font-bold text-slate-400 font-mono-code uppercase tracking-wider">Runtime Role & Code Behavior</label>
+          <p id="card-desc" class="mt-1 text-slate-300 leading-relaxed">
+            Central data access layer. Checks credentials and initializes client.
+          </p>
+        </div>
+
+        <div>
+          <label class="text-[11px] font-bold text-slate-400 font-mono-code uppercase tracking-wider">Code Signature</label>
+          <pre id="card-code" class="mt-1 p-2.5 rounded-lg bg-slate-950 font-mono-code text-slate-300 border border-slate-800 text-[11px] overflow-x-auto"></pre>
+        </div>
+
+        <div class="pt-2 flex flex-col gap-2">
+          <button id="card-trigger-btn" onclick="triggerSpecificNodeFlow()" class="w-full py-2 px-3 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Trigger Flow From This Node
+          </button>
+          <button id="card-chaos-btn" onclick="toggleSelectedNodeFailure()" class="w-full py-1.5 px-3 rounded-lg bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 font-bold text-xs transition flex items-center justify-center gap-1.5">
+            <span>💥 Simulate Node Outage (Chaos 503)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= BOTTOM TOOLBAR ================= -->
+  <footer class="border-t border-slate-800/80 bg-[#080d1a]/90 px-5 py-2 flex items-center justify-between text-xs z-30 font-mono-code">
+    <div class="flex items-center gap-4">
+      <span class="flex items-center gap-1.5 text-slate-400">
+        <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+        </svg>
+        <span class="text-white font-bold">PRIMARY PATH:</span>
+        <span id="footer-path-text" class="text-cyan-300">Client → Static Host → Client App → Data Layer → Database</span>
+      </span>
+
+      <span class="hidden md:inline text-slate-600">|</span>
+
+      <span class="hidden md:flex items-center gap-1.5 text-slate-400">
+        <span class="text-white font-bold">LENS:</span>
+        <span class="text-amber-400">Trust Boundaries & Data Flow Isolation</span>
+      </span>
+    </div>
+
+    <!-- Zoom & Drag Navigation Controls -->
+    <div class="flex items-center gap-3">
+      <span class="text-slate-500 hidden sm:inline">Supports any project folder upload • Disaster recovery enabled</span>
+      <div class="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
+        <button onclick="zoomAdjust(-0.1)" class="px-2 py-1 text-slate-400 hover:text-white">-</button>
+        <span id="zoom-text" class="px-2 text-[11px] text-slate-300">100%</span>
+        <button onclick="zoomAdjust(0.1)" class="px-2 py-1 text-slate-400 hover:text-white">+</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= MODAL 1: USER AUTHENTICATION (LOGIN & REGISTRATION) ================= -->
+  <div id="auth-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-[#0b1324] border border-cyan-500/50 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+      <!-- Tabs -->
+      <div class="flex border-b border-slate-800 bg-slate-900/80">
+        <button id="auth-tab-login" onclick="switchAuthTab('login')" class="flex-1 py-3 text-xs font-bold text-cyan-300 border-b-2 border-cyan-400 bg-slate-900">
+          Sign In
+        </button>
+        <button id="auth-tab-register" onclick="switchAuthTab('register')" class="flex-1 py-3 text-xs font-bold text-slate-400 border-b-2 border-transparent hover:text-white">
+          Register New Account
+        </button>
+        <button onclick="closeAuthModal()" class="px-4 text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <div class="p-6">
+        <!-- Quick Test Account Shortcut -->
+        <div class="mb-4 p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-between text-xs">
+          <span class="text-slate-400 font-mono-code text-[11px]">Demo Profiles:</span>
+          <div class="flex gap-2">
+            <button onclick="quickFillAuth('alex_architect', 'password123')" class="px-2 py-1 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 font-mono-code text-[10px] font-bold">
+              Architect
+            </button>
+            <button onclick="quickFillAuth('system_admin', 'admin2026')" class="px-2 py-1 rounded bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 font-mono-code text-[10px] font-bold">
+              Admin
+            </button>
+          </div>
+        </div>
+
+        <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3.5 text-xs">
+          <!-- Username (for register or login) -->
+          <div>
+            <label class="block font-bold text-slate-300 font-mono-code uppercase mb-1">Username</label>
+            <input id="auth-username" type="text" required placeholder="e.g. alex_architect" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-cyan-300 font-mono-code focus:outline-none focus:border-cyan-500">
+          </div>
+
+          <!-- Email (required for register) -->
+          <div id="auth-email-field" class="hidden">
+            <label class="block font-bold text-slate-300 font-mono-code uppercase mb-1">Email Address</label>
+            <input id="auth-email" type="email" placeholder="name@company.com" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-cyan-300 font-mono-code focus:outline-none focus:border-cyan-500">
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label class="block font-bold text-slate-300 font-mono-code uppercase mb-1">Password</label>
+            <input id="auth-password" type="password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-cyan-300 font-mono-code focus:outline-none focus:border-cyan-500">
+          </div>
+
+          <!-- Role selection (for register) -->
+          <div id="auth-role-field" class="hidden">
+            <label class="block font-bold text-slate-300 font-mono-code uppercase mb-1">Primary Role</label>
+            <select id="auth-role" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-cyan-300 font-mono-code focus:outline-none focus:border-cyan-500">
+              <option value="Lead Architect">Lead Architect</option>
+              <option value="Fullstack Engineer">Fullstack Engineer</option>
+              <option value="Cloud DevOps">Cloud DevOps</option>
+              <option value="System Engineer">System Engineer</option>
+              <option value="Admin">Administrator</option>
+            </select>
+          </div>
+
+          <div id="auth-error-msg" class="text-rose-400 font-mono-code text-[11px] hidden"></div>
+
+          <button type="submit" id="auth-submit-btn" class="w-full py-2.5 rounded-lg bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-slate-950 font-bold text-xs shadow-lg transition">
+            Sign In to Runtime3D
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 2: ARCHITECTURE HISTORY & DISASTER RECOVERY VAULT ================= -->
+  <div id="history-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-[#0b1324] border border-cyan-500/50 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/70">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-cyan-950 text-cyan-400 border border-cyan-800 shadow-lg">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              Architecture History & Recovery Vault
+              <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono-code font-bold">Auto-Protected</span>
+            </h3>
+            <p class="text-xs text-slate-400">If you accidentally delete or alter your diagram, instantly recover previous checkpoints here.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openSaveSnapshotModal()" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs transition">
+            + Save Snapshot
+          </button>
+          <button onclick="toggleHistoryModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">✕</button>
+        </div>
+      </div>
+
+      <!-- History List -->
+      <div id="history-list-container" class="p-6 overflow-y-auto space-y-3 flex-1">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 3: SAVE NEW SNAPSHOT ================= -->
+  <div id="save-snapshot-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-[#0b1324] border border-cyan-500/50 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white">Create Architecture Recovery Checkpoint</h3>
+        <button onclick="closeSaveSnapshotModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 font-mono-code uppercase mb-1">Snapshot Name</label>
+          <input id="snap-name-input" type="text" placeholder="e.g. Production Release v1.3" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-cyan-300 font-mono-code focus:outline-none focus:border-cyan-500">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 font-mono-code uppercase mb-1">Notes / Description</label>
+          <textarea id="snap-desc-input" rows="2" placeholder="e.g. Verified with Supabase RLS and EmailJS failover" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-cyan-300 font-mono-code focus:outline-none focus:border-cyan-500"></textarea>
+        </div>
+
+        <button onclick="confirmSaveSnapshot()" class="w-full py-2.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold text-xs shadow-lg transition">
+          Confirm & Save Checkpoint
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 4: ADMIN GOVERNANCE & USER ACTIVITY PORTAL ================= -->
+  <div id="admin-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-[#0b1324] border border-rose-500/50 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/70">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-rose-950 text-rose-400 border border-rose-800 shadow-lg">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              Administrator Governance Console
+              <span class="text-xs px-2 py-0.5 rounded bg-rose-950 text-rose-400 border border-rose-800 font-mono-code font-bold">Privileged Access</span>
+            </h3>
+            <p class="text-xs text-slate-400 font-mono-code">Monitor registered users, active sessions, and architecture activity logs.</p>
+          </div>
+        </div>
+        <button onclick="toggleAdminModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">✕</button>
+      </div>
+
+      <!-- Admin Tabs -->
+      <div class="flex border-b border-slate-800 bg-slate-950/60 text-xs font-mono-code font-bold">
+        <button id="admin-tab-users" onclick="switchAdminTab('users')" class="px-6 py-3 border-b-2 border-rose-500 text-rose-300">
+          Registered Users (<span id="admin-user-count">3</span>)
+        </button>
+        <button id="admin-tab-logs" onclick="switchAdminTab('logs')" class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-white">
+          Real-Time Audit Log
+        </button>
+      </div>
+
+      <!-- Admin Content View -->
+      <div class="p-6 overflow-y-auto flex-1 font-mono-code text-xs">
+        <!-- Tab 1: Users Table -->
+        <div id="admin-users-view">
+          <div class="border border-slate-800 rounded-xl overflow-hidden">
+            <table class="w-full text-left">
+              <thead class="bg-slate-900 text-slate-400 border-b border-slate-800 text-[11px]">
+                <tr>
+                  <th class="p-3">USERNAME</th>
+                  <th class="p-3">EMAIL</th>
+                  <th class="p-3">ROLE</th>
+                  <th class="p-3">LAST LOGIN</th>
+                  <th class="p-3">SAVED ARCHITECTURES</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-table" class="divide-y divide-slate-800/60 text-slate-300">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 2: Logs Table -->
+        <div id="admin-logs-view" class="hidden space-y-2">
+          <div id="admin-logs-container" class="space-y-2 max-h-[360px] overflow-y-auto">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 5: LIVE DATABASE RECORDS ================= -->
+  <div id="db-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-[#0b1222] border border-cyan-500/50 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-lg bg-teal-950 text-teal-400 border border-teal-800">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span id="db-title-text">Cloud Database</span>: <span class="font-mono-code text-cyan-300" id="db-table-name">records</span> table
+            </h3>
+            <p class="text-xs text-slate-400 font-mono-code">Live persistent storage updated via runtime data simulation</p>
+          </div>
+        </div>
+        <button onclick="toggleDbModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">✕</button>
+      </div>
+
+      <!-- Table View -->
+      <div class="p-6">
+        <div class="overflow-x-auto border border-slate-800 rounded-xl">
+          <table class="w-full text-left font-mono-code text-xs">
+            <thead class="bg-slate-900/90 text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="p-3">ID</th>
+                <th class="p-3">PAYLOAD RECORD</th>
+                <th class="p-3">METADATA</th>
+                <th class="p-3">STATUS</th>
+                <th class="p-3">STORAGE ENGINE</th>
+              </tr>
+            </thead>
+            <tbody id="db-table-body" class="divide-y divide-slate-800/60 text-slate-300">
+              <!-- Dynamically Populated Rows -->
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-4 flex items-center justify-between text-xs text-slate-400 font-mono-code">
+          <span>Row-Level Security & Encrypted TLS active.</span>
+          <button onclick="insertSampleRecord()" class="px-3 py-1.5 bg-cyan-900/80 hover:bg-cyan-800 text-cyan-200 rounded-lg border border-cyan-700 transition">
+            + Insert Direct Mock Entry
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 6: PROJECT FOLDER UPLOAD & ANALYZER ================= -->
+  <div id="upload-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-[#0b1324] border border-cyan-500/50 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/70">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-gradient-to-tr from-cyan-600 to-indigo-600 text-white shadow-lg shadow-cyan-500/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Upload Any Project Folder or Repository</h3>
+            <p class="text-xs text-slate-400">Automatically parses package.json, APIs, databases, routes, and trust boundaries.</p>
+          </div>
+        </div>
+        <button onclick="toggleUploadModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">✕</button>
+      </div>
+
+      <div class="p-6 space-y-5">
+        <!-- Folder Drop Zone -->
+        <div>
+          <label class="text-xs font-bold text-slate-300 font-mono-code uppercase">Drop Project Folder or package.json:</label>
+          <div id="drop-zone" class="mt-2 border-2 border-dashed border-cyan-500/50 hover:border-cyan-400 rounded-xl p-8 text-center cursor-pointer bg-slate-950/60 hover:bg-cyan-950/20 transition group">
+            <input type="file" id="folder-input" webkitdirectory directory multiple class="hidden" onchange="handleFolderSelect(event)">
+            <input type="file" id="file-input" class="hidden" onchange="handleSingleFileSelect(event)">
+            
+            <div class="w-12 h-12 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center mx-auto mb-3 text-cyan-400 group-hover:scale-110 transition">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+              </svg>
+            </div>
+            <p class="text-sm text-slate-200 font-bold">Select Entire Project Folder or Drop Here</p>
+            <p class="text-xs text-slate-400 font-mono-code mt-1">Reads folder hierarchy, frameworks, API clients, databases & services</p>
+            <div class="mt-4 flex items-center justify-center gap-3">
+              <button onclick="event.stopPropagation(); document.getElementById('folder-input').click();" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs">
+                Select Folder
+              </button>
+              <button onclick="event.stopPropagation(); document.getElementById('file-input').click();" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700">
+                Select package.json
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Git Repo Input -->
+        <div>
+          <label class="text-xs font-bold text-slate-300 font-mono-code uppercase">Or Enter Public GitHub Repository URL:</label>
+          <div class="flex gap-2 mt-2">
+            <input id="custom-repo-input" type="text" placeholder="https://github.com/username/project" value="https://github.com/enterprise-cloud/runtime-core" class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs font-mono-code text-cyan-300 focus:outline-none focus:border-cyan-500">
+            <button onclick="analyzeGithubUrl()" class="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-slate-950 font-bold text-xs rounded-lg transition font-mono-code">
+              Scan Repo
+            </button>
+          </div>
+        </div>
+
+        <!-- Presets -->
+        <div>
+          <label class="text-xs font-bold text-slate-400 font-mono-code uppercase">Pre-Loaded Architecture Profiles:</label>
+          <div class="grid grid-cols-2 gap-3 mt-2">
+            <button onclick="loadProfilePreset('reference_app')" class="p-3 rounded-xl border border-cyan-500/60 bg-cyan-950/30 text-left hover:border-cyan-400 transition">
+              <div class="text-xs font-bold text-cyan-300">Profile A: SPA + Cloud DB</div>
+              <div class="text-[11px] text-slate-400 font-mono-code mt-0.5">React 18 + Supabase RLS + EmailJS</div>
+            </button>
+            <button onclick="loadProfilePreset('microservices_app')" class="p-3 rounded-xl border border-slate-700 bg-slate-900/50 text-left hover:border-purple-500 transition">
+              <div class="text-xs font-bold text-purple-300">Profile B: Microservices Cloud</div>
+              <div class="text-[11px] text-slate-400 font-mono-code mt-0.5">Next.js 14 + Express + Redis + Stripe</div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 7: FINOPS CLOUD COST & APM LATENCY EXPLORER ================= -->
+  <div id="finops-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-[#0b1324] border border-cyan-500/50 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/70">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-gradient-to-tr from-emerald-600 to-cyan-600 text-white shadow-lg shadow-emerald-500/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              FinOps & APM Cloud Intelligence
+              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono-code font-bold">REAL-TIME APM</span>
+            </h3>
+            <p class="text-xs text-slate-400 font-mono-code">Cost breakdown per component, latency budget, and scaling forecast</p>
+          </div>
+        </div>
+        <button onclick="closeFinOpsModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">✕</button>
+      </div>
+
+      <div class="p-6 space-y-6">
+        <!-- Top Metrics Cards -->
+        <div class="grid grid-cols-3 gap-4">
+          <div class="bg-slate-950/80 border border-slate-800 p-4 rounded-xl">
+            <div class="text-[11px] text-slate-400 font-mono-code uppercase">Total Monthly Run Rate</div>
+            <div id="finops-total-cost" class="text-2xl font-extrabold text-emerald-400 mt-1 font-mono-code">$148.00</div>
+            <div class="text-[10px] text-slate-500 mt-0.5" id="finops-annual-cost">Projected Annual: $1,776/yr</div>
+          </div>
+          <div class="bg-slate-950/80 border border-slate-800 p-4 rounded-xl">
+            <div class="text-[11px] text-slate-400 font-mono-code uppercase">End-to-End p95 Latency</div>
+            <div id="finops-p95-latency" class="text-2xl font-extrabold text-cyan-400 mt-1 font-mono-code">38 ms</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Target SLA: &lt; 100ms (Healthy)</div>
+          </div>
+          <div class="bg-slate-950/80 border border-slate-800 p-4 rounded-xl">
+            <div class="text-[11px] text-slate-400 font-mono-code uppercase">System Availability</div>
+            <div class="text-2xl font-extrabold text-teal-400 mt-1 font-mono-code">99.99%</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Multi-AZ Failover Enabled</div>
+          </div>
+        </div>
+
+        <!-- Scale Simulation Slider -->
+        <div class="bg-slate-900/40 border border-slate-800 p-4 rounded-xl">
+          <div class="flex items-center justify-between text-xs font-mono-code mb-2">
+            <span class="text-slate-300 font-bold uppercase">Traffic Scale Simulator:</span>
+            <span id="finops-req-display" class="text-cyan-300 font-bold">100,000 req/day (Moderate)</span>
+          </div>
+          <input type="range" id="finops-scale-slider" min="1" max="100" value="10" oninput="updateFinOpsScale(this.value)" class="w-full accent-cyan-400 cursor-pointer">
+          <div class="flex justify-between text-[10px] text-slate-500 font-mono-code mt-1">
+            <span>10k req/day</span>
+            <span>100k req/day</span>
+            <span>1M req/day</span>
+            <span>10M req/day</span>
+          </div>
+        </div>
+
+        <!-- Component Cost & Latency Table -->
+        <div class="overflow-x-auto border border-slate-800 rounded-xl">
+          <table class="w-full text-left font-mono-code text-xs">
+            <thead class="bg-slate-900/90 text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="p-2.5">COMPONENT</th>
+                <th class="p-2.5">TIER / RESOURCE</th>
+                <th class="p-2.5">LATENCY (P95)</th>
+                <th class="p-2.5">EST. MONTHLY COST</th>
+              </tr>
+            </thead>
+            <tbody id="finops-table-body" class="divide-y divide-slate-800/60 text-slate-300 text-[11px]">
+              <tr>
+                <td class="p-2.5 font-bold text-white">Edge CDN (Vercel / Cloudflare)</td>
+                <td class="p-2.5 text-slate-400">Pro Edge Routing + TLS</td>
+                <td class="p-2.5 text-cyan-300">12 ms</td>
+                <td class="p-2.5 font-bold text-emerald-400">$20.00</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-bold text-white">Frontend Client App</td>
+                <td class="p-2.5 text-slate-400">Single Page Bundle (React 18)</td>
+                <td class="p-2.5 text-cyan-300">8 ms</td>
+                <td class="p-2.5 font-bold text-emerald-400">$0.00</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-bold text-white">Unified Data Layer (Client SDK)</td>
+                <td class="p-2.5 text-slate-400">Serverless Client Router</td>
+                <td class="p-2.5 text-cyan-300">4 ms</td>
+                <td class="p-2.5 font-bold text-emerald-400">$0.00</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-bold text-white">PostgreSQL Cloud DB</td>
+                <td class="p-2.5 text-slate-400">2 vCPU, 4GB RAM, Multi-AZ</td>
+                <td class="p-2.5 text-cyan-300">14 ms</td>
+                <td class="p-2.5 font-bold text-emerald-400" id="finops-db-cost">$25.00</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-bold text-white">OAuth Identity Gateway</td>
+                <td class="p-2.5 text-slate-400">JWT Token Auth (Up to 50k MAU)</td>
+                <td class="p-2.5 text-cyan-300">18 ms</td>
+                <td class="p-2.5 font-bold text-emerald-400">$0.00</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-bold text-white">Notification Cloud SaaS</td>
+                <td class="p-2.5 text-slate-400">Transactional Messaging API</td>
+                <td class="p-2.5 text-cyan-300">45 ms</td>
+                <td class="p-2.5 font-bold text-emerald-400" id="finops-mail-cost">$15.00</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-bold text-white">Distributed Fallback Store</td>
+                <td class="p-2.5 text-slate-400">Client Memory / Edge Redis</td>
+                <td class="p-2.5 text-cyan-300">1 ms</td>
+                <td class="p-2.5 font-bold text-emerald-400">$0.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= FLOATING TOAST CONTAINER ================= -->
+  <div id="toast-container" class="fixed bottom-12 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col gap-2"></div>
+
+  <!-- ================= JAVASCRIPT ARCHITECTURE ENGINE ================= -->
+  <script>
+    // ================= ARCHITECTURE PROFILES DATABASE =================
+    const ARCHITECTURE_PROFILES = {
+      // Profile 1: Full-Stack SPA + Managed DB (Universal Cloud Implementation)
+      reference_app: {
+        name: "Full-Stack Web Application (React + Cloud DB)",
+        primaryPathText: "Client User → Static CDN Host → Frontend Client App → Data Access Layer → PostgreSQL DB",
+        dbTitle: "PostgreSQL Cloud DB",
+        tableName: "transactions",
+        boundaries: [
+          {
+            id: "boundary-browser",
+            label: "Browser: untrusted client",
+            cssClass: "boundary-browser",
+            left: 425, top: 75, width: 370, height: 515,
+            color: "#f59e0b"
+          },
+          {
+            id: "boundary-cloud",
+            label: "Managed Cloud: RLS & VPC",
+            cssClass: "boundary-cloud",
+            left: 830, top: 75, width: 265, height: 360,
+            color: "#f43f5e"
+          }
+        ],
+        nodes: {
+          client_user: {
+            title: "Client User",
+            badge: "SRC 1",
+            subtitle: "Web / Mobile Client",
+            x: 35, y: 310, width: 140,
+            trust: "Untrusted Public Client",
+            filepath: "Browser Client Session (User Session)",
+            desc: "Public end-user accessing the web client. Submits API transactions, data requests, and authenticated payloads.",
+            code: `const payload = {
+  userId: "usr_9481",
+  action: "Create Transaction",
+  service: "Enterprise Cloud Subscription",
+  timestamp: new Date().toISOString()
+};
+await dispatchTransaction(payload);`
+          },
+          sys_admin: {
+            title: "System Admin",
+            badge: "SRC 1",
+            subtitle: "Staff / Ops Console",
+            x: 255, y: 120, width: 140,
+            trust: "Privileged Admin Session",
+            filepath: "src/pages/AdminDashboard.jsx",
+            desc: "Authorized administrative operator managing system state, database records, and infrastructure health.",
+            code: `export async function authenticateAdmin(credentials) {
+  return await authProvider.signInWithPassword(credentials);
+}`
+          },
+          static_host: {
+            title: "Static CDN Host",
+            badge: "SRC 2",
+            subtitle: "Edge CDN (Cloudflare/Vercel)",
+            x: 255, y: 310, width: 140,
+            trust: "Edge CDN Delivery",
+            filepath: "vercel.json & edge config",
+            desc: "Hosts the compiled SPA bundle. Configured with single-page-app URL rewriting to route all paths back to index.html.",
+            code: `{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}`
+          },
+          emailjs: {
+            title: "Notification Cloud",
+            badge: "SRC 2",
+            subtitle: "Webhook / Email SaaS",
+            x: 255, y: 480, width: 140,
+            trust: "External Third-Party SaaS",
+            filepath: "Notification API Service",
+            desc: "Third-party transactional messaging service. Dispatches asynchronous notification webhooks and transaction receipts.",
+            code: `await notificationClient.sendWebhook({
+  event: "transaction.created",
+  user: payload.userId,
+  amount: 148.00
+});`
+          },
+          admin_ui: {
+            title: "Admin Ops Portal",
+            badge: "SRC 3",
+            subtitle: "/admin & /admin/ops",
+            x: 450, y: 120, width: 130,
+            trust: "Browser: untrusted client",
+            filepath: "src/pages/AdminDashboard.jsx",
+            desc: "Admin interface displaying live records table, real-time counters, search filters, and status mutators.",
+            code: `const records = await fetchAllRecords();
+setRecords(records || []);
+await updateRecordStatus(id, 'confirmed');`
+          },
+          public_site: {
+            title: "Frontend Client App",
+            badge: "SRC 2",
+            subtitle: "React 18 SPA Engine",
+            x: 450, y: 310, width: 130,
+            trust: "Browser: untrusted client",
+            filepath: "src/components/TransactionForm.jsx & App.jsx",
+            desc: "Client-side React 18 application. Handles UI rendering, input masking, data validation, and real-time state management.",
+            code: `const payload = { ...formData, timestamp: Date.now() };
+await dispatchTransaction(payload);`
+          },
+          data_layer: {
+            title: "Data Access Layer",
+            badge: "SRC 2",
+            subtitle: "Unified ORM / Client",
+            x: 640, y: 310, width: 130,
+            trust: "Browser: untrusted client",
+            filepath: "src/lib/dataLayer.js",
+            desc: "Central data access layer. Checks credentials and initializes client. Automatically falls back to offline cache if offline.",
+            code: `export async function createRecord(record) {
+  if (isCloudConfigured && dbClient) {
+    const { data } = await dbClient.from('transactions').insert([record]).select();
+    if (data) return data[0];
+  }
+  return saveRecordLocally(record);
+}`
+          },
+          local_storage: {
+            title: "Distributed Cache",
+            badge: "SRC 2",
+            subtitle: "Local sandbox / fallback",
+            x: 640, y: 500, width: 130,
+            trust: "Browser Local Sandbox",
+            filepath: "window.localStorage['runtime3d-offline-cache']",
+            desc: "Browser persistent key-value store. Stores transactions as JSON array with mock UUID generation during network outages.",
+            code: `export function saveRecordLocally(record) {
+  const records = readStoredRecords();
+  const newRecord = { id: crypto.randomUUID(), ...record };
+  writeStoredRecords([newRecord, ...records]);
+  return newRecord;
+}`
+          },
+          supabase_auth: {
+            title: "OAuth Identity Gateway",
+            badge: "SRC 1",
+            subtitle: "JWT & Session Auth",
+            x: 850, y: 120, width: 140,
+            trust: "Managed Cloud: RLS & VPC",
+            filepath: "GoTrue / OIDC Auth Gateway",
+            desc: "Issues secure cryptographically signed JWT tokens for authenticated staff. Grants the 'authenticated' role required by PostgreSQL RLS.",
+            code: `const { data, error } = await authClient.signInWithPassword({
+  email: email,
+  password: password
+});`
+          },
+          supabase_db: {
+            title: "PostgreSQL DB",
+            badge: "SRC 2",
+            subtitle: "transactions table",
+            x: 850, y: 310, width: 140,
+            trust: "Managed Cloud: RLS & VPC",
+            filepath: "PostgreSQL 15 (transactions table)",
+            desc: "PostgreSQL database storing transactions table with Row-Level Security (RLS). Allows anonymous INSERT for public visitors, but restricts SELECT and UPDATE strictly to authenticated staff.",
+            code: `-- PostgreSQL RLS Policies:
+CREATE POLICY "Anyone can insert" ON transactions FOR INSERT WITH CHECK (true);
+CREATE POLICY "Auth users can view all" ON transactions FOR SELECT USING (auth.role() = 'authenticated');`
+          }
+        },
+        wires: [
+          { id: "w-client-host", from: "client_user", to: "static_host", label: "HTTPS", isPrimary: true, marker: "arrow-cyan" },
+          { id: "w-host-public", from: "static_host", to: "public_site", label: "bundle", isPrimary: true, marker: "arrow-cyan" },
+          { id: "w-public-datalayer", from: "public_site", to: "data_layer", label: "dispatch", isPrimary: true, marker: "arrow-cyan" },
+          { id: "w-datalayer-db", from: "data_layer", to: "supabase_db", label: "PostgREST", isPrimary: true, marker: "arrow-cyan" },
+          { id: "w-public-email", from: "public_site", to: "emailjs", label: "notify", isDashed: true, color: "#a855f7", marker: "arrow-purple" },
+          { id: "w-admin-adminui", from: "sys_admin", to: "admin_ui", label: "sign in", marker: "arrow-gray" },
+          { id: "w-adminui-datalayer", from: "admin_ui", to: "data_layer", label: "admin ops", color: "#38bdf8", marker: "arrow-cyan" },
+          { id: "w-adminui-auth", from: "admin_ui", to: "supabase_auth", label: "sign-in", isDashed: true, color: "#f43f5e", marker: "arrow-rose" },
+          { id: "w-datalayer-local", from: "data_layer", to: "local_storage", label: "fallback", isDashed: true, color: "#a855f7", marker: "arrow-purple" },
+          { id: "w-db-auth", from: "supabase_db", to: "supabase_auth", label: "sync RLS", isDashed: true, color: "#38bdf8", marker: "arrow-cyan" }
+        ],
+        steps: {
+          primary: [
+            {
+              node: "client_user",
+              hud: "Step 1/9 [Left Area]: Client User initiates API transaction from web/mobile endpoint.",
+              payload: { userId: "usr-491", action: "Enterprise Cloud Subscription", plan: "Annual Pro", amount: "$148.00" },
+              wire: "w-client-host",
+              label: "POST",
+              color: "#38bdf8"
+            },
+            {
+              node: "static_host",
+              hud: "Step 2/9 [Left-to-Center]: Static Host (Edge CDN) serves optimized client application bundle.",
+              wire: "w-host-public",
+              label: "BUNDLE",
+              color: "#38bdf8"
+            },
+            {
+              node: "emailjs",
+              hud: "Step 3/9 [Lower-Left Area]: Frontend dispatches notification webhook to Notification Cloud SaaS.",
+              wire: "w-public-email",
+              label: "WEBHOOK",
+              color: "#c084fc"
+            },
+            {
+              node: "data_layer",
+              hud: "Step 4/9 [Center Hub]: Frontend invokes dispatchTransaction() on central Data Access Layer.",
+              wire: "w-public-datalayer",
+              label: "DISPATCH",
+              color: "#2dd4bf"
+            },
+            {
+              node: "local_storage",
+              hud: "Step 5/9 [Bottom-Center Area]: Data Access Layer commits state backup DOWN to Distributed Cache sandbox.",
+              wire: "w-datalayer-local",
+              label: "CACHE",
+              color: "#c084fc"
+            },
+            {
+              node: "supabase_db",
+              hud: "Step 6/9 [Right Area]: PostgREST query commits transaction row into PostgreSQL Cloud DB!",
+              wire: "w-datalayer-db",
+              label: "INSERT",
+              color: "#34d399",
+              action: () => commitNewRow("Marcus Vance", "Enterprise Subscription • Annual Pro", "2026-10-26", "09:45 PM", "PostgreSQL Cloud DB")
+            },
+            {
+              node: "sys_admin",
+              hud: "Step 7/9 [Top-Left to Top-Center]: System Admin opens privileged ops console to inspect live cluster.",
+              wire: "w-admin-adminui",
+              label: "ADMIN LOGIN",
+              color: "#60a5fa"
+            },
+            {
+              node: "admin_ui",
+              hud: "Step 8/9 [Top-Center to Top-Right]: Admin Ops Portal authenticates credentials via OAuth Identity Gateway.",
+              wire: "w-adminui-auth",
+              label: "JWT AUTH",
+              color: "#fb7185"
+            },
+            {
+              node: "data_layer",
+              hud: "Step 9/9 [Top-Center DOWN to Center]: Authenticated! Admin Ops Portal issues management command to Data Access Layer.",
+              wire: "w-adminui-datalayer",
+              label: "ADMIN OPS",
+              color: "#38bdf8",
+              action: () => {
+                const dbNode = document.getElementById('node-supabase_db');
+                if (dbNode) dbNode.classList.add('active-pulse');
+              }
+            }
+          ],
+          admin: [
+            {
+              node: "sys_admin",
+              hud: "Admin Step 1/3 [Forward Left->Center]: Operator authenticates with administrative credentials.",
+              payload: { user: "admin@enterprise.local", action: "authenticateAdmin()" },
+              wire: "w-admin-adminui",
+              label: "SIGN IN",
+              color: "#60a5fa"
+            },
+            {
+              node: "admin_ui",
+              hud: "Admin Step 2/3 [Forward Center->Right]: Admin Portal validates session with OAuth Identity Gateway.",
+              wire: "w-adminui-auth",
+              label: "JWT AUTH",
+              color: "#fb7185"
+            },
+            {
+              node: "data_layer",
+              hud: "Admin Step 3/3 [Forward Right & Down]: Session verified! Admin Portal executes management operations in Data Layer.",
+              wire: "w-adminui-datalayer",
+              label: "ADMIN OPS",
+              color: "#38bdf8",
+              action: () => toggleDbModal()
+            }
+          ],
+          fallback: [
+            { node: "client_user", hud: "Offline 1/3: Client User dispatches request while cloud network is unavailable.", payload: { user: "Offline Client", action: "Queue Transaction", timestamp: "2026-10-26" }, wire: "w-client-host", label: "OFFLINE", color: "#f59e0b" },
+            { node: "data_layer", hud: "Offline 2/3: Data Layer detects offline primary database. Circuit breaker routes to Distributed Cache.", wire: "w-datalayer-local", label: "CIRCUIT BREAKER", color: "#c084fc" },
+            { node: "local_storage", hud: "Offline 3/3: Request committed to persistent local cache! Synchronizes upon reconnection.", action: () => commitNewRow("Offline Client", "Queued Batch Operation", "2026-10-26", "10:15 PM", "Distributed Cache (Fallback)") }
+          ]
+        },
+        records: [
+          { id: "rec-001", title: "David Miller", meta: "Enterprise Subscription • Annual Plan", status: "confirmed", engine: "PostgreSQL Cloud DB" },
+          { id: "rec-002", title: "Elena Rostova", meta: "Cloud Storage Allocation • 500GB Tier", status: "confirmed", engine: "PostgreSQL Cloud DB" },
+          { id: "rec-003", title: "Michael Chang", meta: "API Gateway Route Update • Cluster #2", status: "pending", engine: "PostgreSQL Cloud DB" },
+          { id: "rec-004", title: "Sophia Martinez", meta: "Database Read Replica • Multi-AZ Sync", status: "synced", engine: "PostgreSQL Cloud DB" }
+        ]
+      },
+
+      // Profile 2: Microservices Cloud (Next.js + Express + Redis + Stripe + Postgres)
+      microservices_app: {
+        name: "E-Commerce Microservices Cloud",
+        primaryPathText: "Consumer → API Gateway → Order Service → PostgreSQL Cluster",
+        dbTitle: "PostgreSQL Database",
+        tableName: "orders",
+        boundaries: [
+          {
+            id: "boundary-gateway",
+            label: "Kubernetes Cluster: Private VPC",
+            cssClass: "boundary-browser",
+            left: 425, top: 75, width: 370, height: 515,
+            color: "#f59e0b"
+          },
+          {
+            id: "boundary-storage",
+            label: "Managed Cloud DB & Cache Zone",
+            cssClass: "boundary-cloud",
+            left: 830, top: 75, width: 265, height: 360,
+            color: "#f43f5e"
+          }
+        ],
+        nodes: {
+          client_user: {
+            title: "Customer",
+            badge: "CLIENT",
+            subtitle: "Mobile / Web Shopper",
+            x: 35, y: 310, width: 140,
+            trust: "External Public Client",
+            filepath: "apps/web/app/checkout/page.tsx",
+            desc: "Shopper checking out shopping cart items and submitting payment.",
+            code: `const response = await fetch('/api/checkout', {
+  method: 'POST',
+  body: JSON.stringify({ items, total: 189.00 })
+});`
+          },
+          sys_admin: {
+            title: "Ops Admin",
+            badge: "INTERNAL",
+            subtitle: "Internal Staff",
+            x: 255, y: 120, width: 140,
+            trust: "VPN Authenticated Staff",
+            filepath: "apps/internal/dashboard/orders.tsx",
+            desc: "Operations team managing orders, fulfillment, and refunds.",
+            code: `const orders = await orderServiceClient.getPendingOrders();`
+          },
+          static_host: {
+            title: "Cloudflare CDN",
+            badge: "EDGE",
+            subtitle: "Edge CDN & WAF",
+            x: 255, y: 310, width: 140,
+            trust: "Edge Network (WAF Protected)",
+            filepath: "cloudflare.config.js",
+            desc: "DDoS mitigation, TLS termination, and edge caching.",
+            code: `export default {
+  routes: [{ pattern: "/api/*", origin: "api-gateway.internal" }]
+};`
+          },
+          emailjs: {
+            title: "Stripe API",
+            badge: "SAAS",
+            subtitle: "Payment Gateway",
+            x: 255, y: 480, width: 140,
+            trust: "PCI-DSS Level 1 Cloud",
+            filepath: "services/billing/stripe.ts",
+            desc: "Card processing and payment intent confirmation.",
+            code: `const paymentIntent = await stripe.paymentIntents.create({
+  amount: 18900,
+  currency: 'usd'
+});`
+          },
+          admin_ui: {
+            title: "API Gateway",
+            badge: "SERVICE",
+            subtitle: "Kong / Envoy Proxy",
+            x: 450, y: 120, width: 130,
+            trust: "Private VPC Ingress",
+            filepath: "gateway/routes.yaml",
+            desc: "Rate limiting, JWT token validation, and service routing.",
+            code: `plugins:
+  - name: jwt
+  - name: rate-limiting
+    config: { minute: 1000 }`
+          },
+          public_site: {
+            title: "Order Service",
+            badge: "SERVICE",
+            subtitle: "Node.js / Fastify",
+            x: 450, y: 310, width: 130,
+            trust: "Private VPC Service",
+            filepath: "services/orders/server.ts",
+            desc: "Handles order creation, inventory allocation, and transaction logs.",
+            code: `app.post('/orders', async (req, reply) => {
+  return await orderService.createOrder(req.body);
+});`
+          },
+          data_layer: {
+            title: "Prisma ORM",
+            badge: "DATA",
+            subtitle: "Database Client Layer",
+            x: 640, y: 310, width: 130,
+            trust: "Private VPC Service",
+            filepath: "packages/database/client.ts",
+            desc: "Type-safe database abstraction and query builder.",
+            code: `return await prisma.order.create({
+  data: { customerId, total, status: 'PAID' }
+});`
+          },
+          local_storage: {
+            title: "Redis Cache",
+            badge: "CACHE",
+            subtitle: "In-Memory Store",
+            x: 640, y: 500, width: 130,
+            trust: "Private Subnet",
+            filepath: "services/cache/redis.ts",
+            desc: "Session caching and inventory locking.",
+            code: `await redis.setex(\`lock:inventory:\${sku}\`, 30, 'LOCKED');`
+          },
+          supabase_auth: {
+            title: "Auth0 / Okta",
+            badge: "IAM",
+            subtitle: "Enterprise SSO",
+            x: 850, y: 120, width: 140,
+            trust: "Identity Provider",
+            filepath: "gateway/auth.ts",
+            desc: "OIDC and OAuth 2.0 token issuer.",
+            code: `const user = await verifyJwt(authHeader);`
+          },
+          supabase_db: {
+            title: "PostgreSQL DB",
+            badge: "STORE",
+            subtitle: "Orders & Ledger",
+            x: 850, y: 310, width: 140,
+            trust: "Private Subnet DB",
+            filepath: "database/schema.prisma",
+            desc: "ACID compliant relational database storing customer orders.",
+            code: `CREATE TABLE orders (
+  id UUID PRIMARY KEY,
+  customer_id TEXT NOT NULL,
+  total NUMERIC(10,2) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);`
+          }
+        },
+        wires: [
+          { id: "w-client-host", from: "client_user", to: "static_host", label: "HTTPS", isPrimary: true, marker: "arrow-cyan" },
+          { id: "w-host-public", from: "static_host", to: "public_site", label: "proxy", isPrimary: true, marker: "arrow-cyan" },
+          { id: "w-public-datalayer", from: "public_site", to: "data_layer", label: "invoke", isPrimary: true, marker: "arrow-cyan" },
+          { id: "w-datalayer-db", from: "data_layer", to: "supabase_db", label: "SQL INSERT", isPrimary: true, marker: "arrow-cyan" },
+          { id: "w-public-email", from: "public_site", to: "emailjs", label: "charge", isDashed: true, color: "#a855f7", marker: "arrow-purple" },
+          { id: "w-admin-adminui", from: "sys_admin", to: "admin_ui", label: "VPN", marker: "arrow-gray" },
+          { id: "w-adminui-datalayer", from: "admin_ui", to: "data_layer", label: "RPC", color: "#38bdf8", marker: "arrow-cyan" },
+          { id: "w-adminui-auth", from: "admin_ui", to: "supabase_auth", label: "OIDC", isDashed: true, color: "#f43f5e", marker: "arrow-rose" },
+          { id: "w-datalayer-local", from: "data_layer", to: "local_storage", label: "cache", isDashed: true, color: "#a855f7", marker: "arrow-purple" }
+        ],
+        steps: {
+          primary: [
+            { node: "client_user", hud: "Step 1/5: Customer submits checkout order for $189.00.", payload: { orderId: "ord-9821", total: "$189.00", items: 3 }, wire: "w-client-host" },
+            { node: "static_host", hud: "Step 2/5: Cloudflare WAF validates TLS and routes to Order Service.", wire: "w-host-public" },
+            { node: "public_site", hud: "Step 3/5: Order Service acquires Redis inventory lock & charges Stripe.", wire: "w-public-datalayer" },
+            { node: "data_layer", hud: "Step 4/5: Prisma ORM executes ACID transaction.", wire: "w-datalayer-db" },
+            { node: "supabase_db", hud: "Step 5/5: PostgreSQL DB commits order row!", action: () => commitNewRow("Order #9821", "3 items • $189.00", "2026-10-05", "12:45 PM", "PostgreSQL Cluster") }
+          ],
+          admin: [
+            { node: "sys_admin", hud: "Ops Admin authenticates via OIDC SSO.", wire: "w-admin-adminui" },
+            { node: "admin_ui", hud: "API Gateway verifies bearer token with Auth0.", wire: "w-adminui-auth" },
+            { node: "data_layer", hud: "Admin queries order metrics via RPC.", wire: "w-adminui-datalayer", action: () => toggleDbModal() }
+          ],
+          fallback: [
+            { node: "client_user", hud: "Step 1/2: Checkout requests cached catalog.", wire: "w-client-host" },
+            { node: "data_layer", hud: "Step 2/2: Serving from Redis Cache with 5ms latency.", wire: "w-datalayer-local" },
+            { node: "local_storage", hud: "Cache HIT: Redis returned catalog state." }
+          ]
+        },
+        records: [
+          { id: "ord-9818", title: "Order #9818", meta: "2 items • $74.50", status: "confirmed", engine: "PostgreSQL" },
+          { id: "ord-9819", title: "Order #9819", meta: "5 items • $320.00", status: "confirmed", engine: "PostgreSQL" },
+          { id: "ord-9820", title: "Order #9820", meta: "1 item • $19.99", status: "pending", engine: "PostgreSQL" }
+        ]
+      }
+    };
+
+    // Current State
+    let activeProfileKey = 'reference_app';
+    let currentProfile = ARCHITECTURE_PROFILES[activeProfileKey];
+    let is3D = true;
+    let isSimulating = false;
+    let simTimer = null;
+    let simSpeed = 1;
+    let currentStepIndex = 0;
+    let selectedNodeKey = 'data_layer';
+    let currentZoom = 1;
+
+    // Current Logged-in User State (Default: alex_architect)
+    let currentUser = {
+      username: "alex_architect",
+      email: "alex@archflow.dev",
+      role: "Lead Architect"
+    };
+
+    // Fallback History Store
+    let userHistory = [
+      {
+        id: "snap-001",
+        name: "Full-Stack Web App (React + Supabase RLS)",
+        profileKey: "reference_app",
+        componentsCount: 10,
+        conduitsCount: 10,
+        stack: ["React 18", "Supabase", "EmailJS", "Vercel"],
+        createdAt: new Date().toISOString(),
+        description: "Baseline deployment architecture with Browser Trust Boundary and Supabase RLS."
+      },
+      {
+        id: "snap-002",
+        name: "E-Commerce Microservices Cloud Snapshot",
+        profileKey: "microservices_app",
+        componentsCount: 10,
+        conduitsCount: 9,
+        stack: ["Next.js 14", "Prisma", "Redis", "Stripe API"],
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+        description: "Multi-tier microservices pipeline with Redis inventory lock."
+      }
+    ];
+
+    // ================= INITIALIZATION =================
+    window.addEventListener('DOMContentLoaded', () => {
+      // Check saved session in localStorage
+      const savedUser = localStorage.getItem('runtime3d_user');
+      if (savedUser) {
+        try { currentUser = JSON.parse(savedUser); } catch(e){}
+      }
+      updateAuthUI();
+      loadProfile(activeProfileKey);
+      setupDropZone();
+      fetchServerHistory();
+    });
+
+    // ================= TOAST NOTIFICATION UTILITY =================
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'bg-emerald-950/90 text-emerald-300 border-emerald-700/80',
+        error: 'bg-rose-950/90 text-rose-300 border-rose-700/80',
+        info: 'bg-slate-900/95 text-cyan-300 border-cyan-700/80'
+      };
+      toast.className = `toast-pill flex items-center gap-2 px-4 py-2.5 rounded-xl border shadow-2xl backdrop-blur-md font-mono-code text-xs ${colors[type] || colors.info}`;
+      toast.innerHTML = `
+        <span class="w-2 h-2 rounded-full ${type === 'success' ? 'bg-emerald-400' : type === 'error' ? 'bg-rose-400' : 'bg-cyan-400'}"></span>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.4s ease';
+        setTimeout(() => toast.remove(), 400);
+      }, 3500);
+    }
+
+    // ================= USER AUTHENTICATION =================
+    function updateAuthUI() {
+      const loggedOutView = document.getElementById('logged-out-view');
+      const loggedInView = document.getElementById('logged-in-view');
+      const adminBtn = document.getElementById('admin-portal-btn');
+      const displayName = document.getElementById('user-display-name');
+      const avatar = document.getElementById('user-avatar');
+      const badge = document.getElementById('user-history-badge');
+
+      if (currentUser) {
+        loggedOutView.classList.add('hidden');
+        loggedInView.classList.remove('hidden');
+        displayName.innerText = currentUser.username;
+        avatar.innerText = (currentUser.username || 'U').charAt(0).toUpperCase();
+
+        if (currentUser.role === 'Admin') {
+          adminBtn.classList.remove('hidden');
+        } else {
+          adminBtn.classList.add('hidden');
+        }
+
+        badge.innerText = userHistory.length;
+      } else {
+        loggedOutView.classList.remove('hidden');
+        loggedInView.classList.add('hidden');
+      }
+    }
+
+    function openAuthModal(tab = 'login') {
+      switchAuthTab(tab);
+      document.getElementById('auth-modal').classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+      document.getElementById('auth-error-msg').classList.add('hidden');
+    }
+
+    function switchAuthTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('auth-tab-login').className = isLogin 
+        ? 'flex-1 py-3 text-xs font-bold text-cyan-300 border-b-2 border-cyan-400 bg-slate-900' 
+        : 'flex-1 py-3 text-xs font-bold text-slate-400 border-b-2 border-transparent hover:text-white';
+      document.getElementById('auth-tab-register').className = !isLogin 
+        ? 'flex-1 py-3 text-xs font-bold text-cyan-300 border-b-2 border-cyan-400 bg-slate-900' 
+        : 'flex-1 py-3 text-xs font-bold text-slate-400 border-b-2 border-transparent hover:text-white';
+      
+      document.getElementById('auth-email-field').classList.toggle('hidden', isLogin);
+      document.getElementById('auth-role-field').classList.toggle('hidden', isLogin);
+      document.getElementById('auth-submit-btn').innerText = isLogin ? 'Sign In to Runtime3D' : 'Complete Registration';
+      document.getElementById('auth-error-msg').classList.add('hidden');
+    }
+
+    function quickFillAuth(username, password) {
+      document.getElementById('auth-username').value = username;
+      document.getElementById('auth-password').value = password;
+      if (document.getElementById('auth-email')) {
+        document.getElementById('auth-email').value = `${username}@runtime3d.io`;
+      }
+    }
+
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      const username = document.getElementById('auth-username').value.trim();
+      const password = document.getElementById('auth-password').value;
+      const email = document.getElementById('auth-email').value.trim();
+      const role = document.getElementById('auth-role').value;
+      const isLogin = document.getElementById('auth-email-field').classList.contains('hidden');
+      const errorMsg = document.getElementById('auth-error-msg');
+
+      errorMsg.classList.add('hidden');
+
+      try {
+        const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+        const payload = isLogin 
+          ? { credential: username, password } 
+          : { username, email, password, role };
+
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Authentication failed.');
+        }
+
+        currentUser = data.user;
+        localStorage.setItem('runtime3d_user', JSON.stringify(currentUser));
+        updateAuthUI();
+        closeAuthModal();
+        fetchServerHistory();
+        showToast(isLogin ? `Welcome back, ${currentUser.username}!` : `Account registered! Welcome, ${currentUser.username}!`, 'success');
+        logHud(`User authenticated: ${currentUser.username} (${currentUser.role})`);
+      } catch (err) {
+        // Fallback for static client execution without running server.js
+        if (err.message.includes('fetch') || err.message.includes('Failed to fetch')) {
+          currentUser = {
+            username: username || 'demo_user',
+            email: email || `${username}@domain.com`,
+            role: role || (username === 'system_admin' ? 'Admin' : 'Architect')
+          };
+          localStorage.setItem('runtime3d_user', JSON.stringify(currentUser));
+          updateAuthUI();
+          closeAuthModal();
+          showToast(`Signed in offline as ${currentUser.username}!`, 'success');
+          return;
+        }
+        errorMsg.innerText = err.message;
+        errorMsg.classList.remove('hidden');
+      }
+    }
+
+    function handleLogout() {
+      const name = currentUser ? currentUser.username : 'User';
+      currentUser = null;
+      localStorage.removeItem('runtime3d_user');
+      updateAuthUI();
+      showToast(`${name} signed out.`, 'info');
+      logHud('User logged out.');
+    }
+
+    // ================= ARCHITECTURE HISTORY & DISASTER RECOVERY =================
+    async function fetchServerHistory() {
+      try {
+        const res = await fetch('/api/history');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.history && data.history.length > 0) {
+            userHistory = data.history;
+            updateAuthUI();
+          }
+        }
+      } catch (e) {
+        // Use local fallback
+      }
+    }
+
+    function toggleHistoryModal() {
+      const modal = document.getElementById('history-modal');
+      const isHidden = modal.classList.contains('hidden');
+      if (isHidden) {
+        renderHistoryList();
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function renderHistoryList() {
+      const container = document.getElementById('history-list-container');
+      container.innerHTML = '';
+
+      if (userHistory.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-slate-500 font-mono-code text-xs">
+            No architecture snapshots found. Click "+ Save Snapshot" to create your first recovery checkpoint!
+          </div>
+        `;
+        return;
+      }
+
+      userHistory.forEach((snap, idx) => {
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-cyan-500/60 transition flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-lg';
+        
+        const stackBadges = (snap.stack || ['Runtime3D Engine']).map(s => 
+          `<span class="px-2 py-0.5 rounded text-[10px] font-mono-code bg-slate-900 text-cyan-300 border border-slate-700">${s}</span>`
+        ).join(' ');
+
+        card.innerHTML = `
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-white text-sm">${snap.name}</span>
+              <span class="text-[10px] font-mono-code px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
+                ${snap.componentsCount || 10} Nodes
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 font-mono-code">${snap.description || 'Snapshot checkpoint.'}</p>
+            <div class="flex items-center gap-2 pt-1">
+              <span class="text-[10px] text-slate-500 font-mono-code">${new Date(snap.createdAt).toLocaleString()}</span>
+              <div class="flex gap-1">${stackBadges}</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 self-end md:self-center">
+            <!-- RESTORE / RECOVER BUTTON -->
+            <button onclick="restoreSnapshot('${snap.id}')" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow transition" title="Recover and load this architecture into visualizer">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              <span>Restore</span>
+            </button>
+
+            <!-- DOWNLOAD JSON BACKUP -->
+            <button onclick="downloadSnapshotJson('${snap.id}')" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 transition" title="Download JSON Backup">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+            </button>
+
+            <!-- DELETE SNAPSHOT -->
+            <button onclick="deleteSnapshot('${snap.id}')" class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-slate-900 transition" title="Delete Snapshot">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function openSaveSnapshotModal() {
+      document.getElementById('snap-name-input').value = `${currentProfile.name} Checkpoint`;
+      document.getElementById('snap-desc-input').value = `Snapshot with ${Object.keys(currentProfile.nodes).length} nodes and active live simulation state.`;
+      document.getElementById('save-snapshot-modal').classList.remove('hidden');
+    }
+
+    function closeSaveSnapshotModal() {
+      document.getElementById('save-snapshot-modal').classList.add('hidden');
+    }
+
+    async function confirmSaveSnapshot() {
+      const name = document.getElementById('snap-name-input').value.trim() || 'Architecture Snapshot';
+      const desc = document.getElementById('snap-desc-input').value.trim() || 'User checkpoint.';
+      const newSnap = {
+        id: `snap-${Date.now().toString(36)}`,
+        userId: currentUser ? currentUser.username : 'anonymous',
+        username: currentUser ? currentUser.username : 'guest',
+        name: name,
+        profileKey: activeProfileKey,
+        componentsCount: Object.keys(currentProfile.nodes).length,
+        conduitsCount: currentProfile.wires.length,
+        stack: ['React 18', 'Supabase', 'Cloud Conduits'],
+        createdAt: new Date().toISOString(),
+        description: desc
+      };
+
+      userHistory.unshift(newSnap);
+      updateAuthUI();
+      closeSaveSnapshotModal();
+
+      // Try server save
+      try {
+        await fetch('/api/history', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newSnap)
+        });
+      } catch(e) {}
+
+      showToast(`Snapshot "${name}" saved to your Recovery Vault!`, 'success');
+      logHud(`Saved architecture snapshot checkpoint: ${name}`);
+    }
+
+    function restoreSnapshot(snapId) {
+      const snap = userHistory.find(s => s.id === snapId);
+      if (!snap) return;
+
+      const profileToLoad = ARCHITECTURE_PROFILES[snap.profileKey] ? snap.profileKey : 'reference_app';
+      loadProfile(profileToLoad);
+      toggleHistoryModal();
+      showToast(`Restored snapshot: "${snap.name}"!`, 'success');
+      logHud(`Disaster recovery executed: Loaded "${snap.name}" successfully.`);
+    }
+
+    function downloadSnapshotJson(snapId) {
+      const snap = userHistory.find(s => s.id === snapId);
+      if (!snap) return;
+
+      const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${snap.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}_backup.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(`Downloaded architecture backup: ${a.download}`, 'info');
+    }
+
+    async function deleteSnapshot(snapId) {
+      userHistory = userHistory.filter(s => s.id !== snapId);
+      renderHistoryList();
+      updateAuthUI();
+      try {
+        await fetch(`/api/history/${snapId}`, { method: 'DELETE' });
+      } catch(e) {}
+      showToast('Snapshot removed from history.', 'info');
+    }
+
+    // ================= ADMIN GOVERNANCE & MONITORING PORTAL =================
+    function toggleAdminModal() {
+      const modal = document.getElementById('admin-modal');
+      const isHidden = modal.classList.contains('hidden');
+      if (isHidden) {
+        loadAdminData();
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function switchAdminTab(tab) {
+      const isUsers = tab === 'users';
+      document.getElementById('admin-tab-users').className = isUsers 
+        ? 'px-6 py-3 border-b-2 border-rose-500 text-rose-300' 
+        : 'px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-white';
+      document.getElementById('admin-tab-logs').className = !isUsers 
+        ? 'px-6 py-3 border-b-2 border-rose-500 text-rose-300' 
+        : 'px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-white';
+      
+      document.getElementById('admin-users-view').classList.toggle('hidden', !isUsers);
+      document.getElementById('admin-logs-view').classList.toggle('hidden', isUsers);
+    }
+
+    async function loadAdminData() {
+      try {
+        const [usersRes, logsRes] = await Promise.all([
+          fetch('/api/admin/users'),
+          fetch('/api/admin/logs')
+        ]);
+
+        if (usersRes.ok) {
+          const uData = await usersRes.json();
+          renderAdminUsers(uData.users || []);
+        }
+
+        if (logsRes.ok) {
+          const lData = await logsRes.json();
+          renderAdminLogs(lData.logs || []);
+        }
+      } catch (err) {
+        // Fallback demo admin data
+        renderAdminUsers([
+          { username: 'alex_architect', email: 'alex@archflow.dev', role: 'Lead Architect', lastLogin: new Date().toISOString(), architecturesCount: 3 },
+          { username: 'system_admin', email: 'admin@runtime3d.io', role: 'Admin', lastLogin: new Date().toISOString(), architecturesCount: 5 }
+        ]);
+      }
+    }
+
+    function renderAdminUsers(users) {
+      const tbody = document.getElementById('admin-users-table');
+      tbody.innerHTML = '';
+      document.getElementById('admin-user-count').innerText = users.length;
+
+      users.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-900/60 transition';
+        tr.innerHTML = `
+          <td class="p-3 font-bold text-white flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            ${u.username}
+          </td>
+          <td class="p-3 text-slate-300">${u.email}</td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'Admin' ? 'bg-rose-950 text-rose-400 border border-rose-800' : 'bg-cyan-950 text-cyan-400 border border-cyan-800'}">
+              ${u.role}
+            </span>
+          </td>
+          <td class="p-3 text-slate-400">${new Date(u.lastLogin || Date.now()).toLocaleString()}</td>
+          <td class="p-3 font-bold text-cyan-400">${u.architecturesCount || 0}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAdminLogs(logs) {
+      const container = document.getElementById('admin-logs-container');
+      container.innerHTML = '';
+
+      logs.forEach(l => {
+        const item = document.createElement('div');
+        item.className = 'p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-start justify-between text-xs';
+        item.innerHTML = `
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-cyan-300">[${l.action}]</span>
+              <span class="text-white font-semibold">${l.username}</span>
+            </div>
+            <p class="text-slate-400">${l.details}</p>
+          </div>
+          <span class="text-[10px] text-slate-500 whitespace-nowrap ml-4">${new Date(l.timestamp).toLocaleTimeString()}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // ================= RENDER ARCHITECTURE PROFILE =================
+    function loadProfile(profileKey) {
+      activeProfileKey = profileKey;
+      currentProfile = ARCHITECTURE_PROFILES[profileKey];
+      document.getElementById('project-profile-select').value = profileKey;
+
+      document.getElementById('footer-path-text').innerText = currentProfile.primaryPathText;
+      document.getElementById('db-title-text').innerText = currentProfile.dbTitle;
+      document.getElementById('db-table-name').innerText = currentProfile.tableName;
+
+      renderBoundaries();
+      renderNodes();
+      renderWires();
+      renderDbTable();
+
+      inspectNode(Object.keys(currentProfile.nodes)[0]);
+      logHud(`Loaded architecture profile: ${currentProfile.name}`);
+    }
+
+    function renderBoundaries() {
+      const container = document.getElementById('boundaries-container');
+      container.innerHTML = '';
+
+      currentProfile.boundaries.forEach(b => {
+        const box = document.createElement('div');
+        box.className = `boundary-box ${b.cssClass} absolute pointer-events-none z-0`;
+        box.style.left = `${b.left}px`;
+        box.style.top = `${b.top}px`;
+        box.style.width = `${b.width}px`;
+        box.style.height = `${b.height}px`;
+
+        box.innerHTML = `
+          <div class="absolute -top-3.5 left-5 px-3 py-1 bg-[#080d1a] border rounded-md text-[11px] font-mono-code font-bold flex items-center gap-1.5 shadow-lg" style="border-color: ${b.color}; color: ${b.color};">
+            <span class="w-2 h-2 rounded-full" style="background-color: ${b.color};"></span>
+            ${b.label}
+          </div>
+        `;
+        container.appendChild(box);
+      });
+    }
+
+    function renderNodes() {
+      const container = document.getElementById('nodes-container');
+      container.innerHTML = '';
+
+      Object.entries(currentProfile.nodes).forEach(([key, n]) => {
+        const el = document.createElement('div');
+        el.id = `node-${key}`;
+        el.className = 'node-card absolute p-3 rounded-xl border border-slate-700/80 cursor-pointer shadow-lg z-20';
+        el.style.left = `${n.x}px`;
+        el.style.top = `${n.y}px`;
+        el.style.width = `${n.width}px`;
+        el.onclick = () => inspectNode(key);
+
+        el.innerHTML = `
+          <div class="flex items-center justify-between mb-1.5">
+            <div class="p-1.5 rounded-lg bg-slate-800 text-cyan-400">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+              </svg>
+            </div>
+            <span class="text-[10px] font-mono-code px-1.5 py-0.5 rounded bg-teal-950 text-teal-400 border border-teal-800 font-bold">${n.badge}</span>
+          </div>
+          <div class="font-bold text-sm text-white">${n.title}</div>
+          <div class="text-[10px] text-slate-400 font-mono-code mt-0.5">${n.subtitle}</div>
+        `;
+
+        container.appendChild(el);
+      });
+    }
+
+    function renderWires() {
+      const wiresGroup = document.getElementById('svg-wires-group');
+      wiresGroup.innerHTML = '';
+
+      currentProfile.wires.forEach(w => {
+        const fromNode = currentProfile.nodes[w.from];
+        const toNode = currentProfile.nodes[w.to];
+        if (!fromNode || !toNode) return;
+
+        const x1 = fromNode.x + fromNode.width / 2;
+        const y1 = fromNode.y + 40;
+        const x2 = toNode.x + toNode.width / 2;
+        const y2 = toNode.y + 40;
+
+        let pathD = '';
+        let labelX = (fromNode.x + fromNode.width + toNode.x) / 2;
+        let labelY = (y1 + y2) / 2 - 8;
+
+        if (w.id === 'w-public-email') {
+          // Public Site down and left to EmailJS
+          pathD = `M ${fromNode.x + 30} ${fromNode.y + 70} L ${fromNode.x + 30} ${toNode.y + 35} L ${toNode.x + toNode.width} ${toNode.y + 35}`;
+          labelX = fromNode.x - 20;
+          labelY = toNode.y + 25;
+        } else if (w.id === 'w-datalayer-local') {
+          // Data Layer straight down to localStorage
+          pathD = `M ${fromNode.x + 65} ${fromNode.y + 70} L ${toNode.x + 65} ${toNode.y}`;
+          labelX = fromNode.x + 105;
+          labelY = (fromNode.y + 70 + toNode.y) / 2;
+        } else if (w.id === 'w-db-auth') {
+          // Supabase DB straight UP to Supabase Auth
+          pathD = `M ${fromNode.x + 70} ${fromNode.y} L ${toNode.x + 70} ${toNode.y + 70}`;
+          labelX = fromNode.x + 115;
+          labelY = (fromNode.y + toNode.y + 70) / 2;
+        } else if (w.id === 'w-adminui-datalayer') {
+          // ================= EXACT ADMIN UI TO DATA LAYER FIX =================
+          // Leaves right side of Admin UI (x=580, y=160), across to x=705, then straight DOWN to Data Layer (y=310)
+          pathD = `M ${fromNode.x + fromNode.width} ${y1} L ${toNode.x + toNode.width / 2} ${y1} L ${toNode.x + toNode.width / 2} ${toNode.y}`;
+          labelX = toNode.x + toNode.width / 2 + 38;
+          labelY = (y1 + toNode.y) / 2;
+        } else if (Math.abs(y1 - y2) < 25) {
+          // Horizontal straight connection
+          pathD = `M ${fromNode.x + fromNode.width} ${y1} L ${toNode.x} ${y2}`;
+        } else if (Math.abs(x1 - x2) < 35) {
+          // Vertical straight connection
+          pathD = `M ${x1} ${fromNode.y + 70} L ${x2} ${toNode.y}`;
+        } else {
+          // General corner
+          pathD = `M ${fromNode.x + fromNode.width} ${y1} L ${x2} ${y1} L ${x2} ${toNode.y}`;
+        }
+
+        const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        pathEl.setAttribute("id", w.id);
+        pathEl.setAttribute("d", pathD);
+        pathEl.setAttribute("class", `pipeline-wire ${w.isPrimary ? 'primary' : ''} ${w.isDashed ? 'dashed-wire' : ''}`);
+        if (w.color) pathEl.setAttribute("stroke", w.color);
+        if (w.marker) pathEl.setAttribute("marker-end", `url(#${w.marker})`);
+
+        wiresGroup.appendChild(pathEl);
+
+        // Path label
+        if (w.label) {
+          const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          textEl.setAttribute("x", labelX);
+          textEl.setAttribute("y", labelY);
+          textEl.setAttribute("fill", w.color || (w.isPrimary ? "#38bdf8" : "#94a3b8"));
+          textEl.setAttribute("font-size", "11");
+          textEl.setAttribute("font-family", "'JetBrains Mono'");
+          textEl.setAttribute("text-anchor", "middle");
+          textEl.textContent = w.label;
+          wiresGroup.appendChild(textEl);
+        }
+      });
+    }
+
+    function switchArchitectureProfile() {
+      const select = document.getElementById('project-profile-select');
+      resetSimulation();
+      loadProfile(select.value);
+    }
+
+    function loadProfilePreset(key) {
+      toggleUploadModal();
+      loadProfile(key);
+    }
+
+    // ================= 3D / 2D VIEW TOGGLING =================
+    function setViewMode(mode) {
+      const plane = document.getElementById('diagram-plane');
+      const btn2D = document.getElementById('mode-2d-btn');
+      const btn3D = document.getElementById('mode-3d-btn');
+
+      if (mode === '3d') {
+        is3D = true;
+        plane.className = 'diagram-plane isometric-3d relative w-[1240px] h-[680px]';
+        btn3D.className = 'px-2.5 py-1 rounded-md text-xs font-semibold transition bg-cyan-900/60 text-cyan-300 border border-cyan-700/60 shadow flex items-center gap-1';
+        btn2D.className = 'px-2.5 py-1 rounded-md text-xs font-semibold transition text-slate-400 hover:text-white flex items-center gap-1';
+        logHud('Switched to 3D Isometric Viewport.');
+      } else {
+        is3D = false;
+        plane.className = 'diagram-plane flat-2d relative w-[1240px] h-[680px]';
+        btn2D.className = 'px-2.5 py-1 rounded-md text-xs font-semibold transition bg-cyan-900/60 text-cyan-300 border border-cyan-700/60 shadow flex items-center gap-1';
+        btn3D.className = 'px-2.5 py-1 rounded-md text-xs font-semibold transition text-slate-400 hover:text-white flex items-center gap-1';
+        logHud('Switched to 2D Clean Blueprint Viewport.');
+      }
+    }
+
+    function zoomAdjust(delta) {
+      currentZoom = Math.min(Math.max(0.6, currentZoom + delta), 1.4);
+      document.getElementById('zoom-text').innerText = `${Math.round(currentZoom * 100)}%`;
+      document.getElementById('scene-viewport').style.transform = `scale(${currentZoom})`;
+    }
+
+    // ================= SIMULATION ENGINE =================
+    function toggleSimulation() {
+      if (isSimulating) {
+        pauseSimulation();
+      } else {
+        startSimulation();
+      }
+    }
+
+    function startSimulation() {
+      isSimulating = true;
+      document.getElementById('sim-btn-text').innerText = 'PAUSE';
+      document.getElementById('sim-icon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+      document.getElementById('btn-start-sim').className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-lg bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/25 active:scale-95';
+      document.getElementById('hud-status').innerText = 'SIMULATING';
+      document.getElementById('hud-status').className = 'text-[10px] px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 font-bold border border-cyan-800';
+
+      runNextStep();
+    }
+
+    function pauseSimulation() {
+      isSimulating = false;
+      clearTimeout(simTimer);
+      document.getElementById('sim-btn-text').innerText = 'RESUME';
+      document.getElementById('sim-icon').innerHTML = '<path d="M8 5v14l11-7z"/>';
+      document.getElementById('btn-start-sim').className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-lg bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 shadow-cyan-500/25 active:scale-95';
+      document.getElementById('hud-status').innerText = 'PAUSED';
+      document.getElementById('hud-status').className = 'text-[10px] px-2 py-0.5 rounded bg-amber-950 text-amber-400 font-bold border border-amber-800';
+    }
+
+    function resetSimulation() {
+      pauseSimulation();
+      currentStepIndex = 0;
+      document.getElementById('sim-btn-text').innerText = 'START SIMULATION';
+      document.getElementById('hud-status').innerText = 'IDLE';
+      document.getElementById('hud-status').className = 'text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400';
+      
+      const packetGroup = document.getElementById('animated-packet-group');
+      if (packetGroup) packetGroup.setAttribute('opacity', '0');
+
+      document.querySelectorAll('.node-card').forEach(n => n.classList.remove('active-pulse'));
+      document.querySelectorAll('.pipeline-wire').forEach(w => w.classList.remove('active-wire'));
+
+      logHud('Simulation reset to origin state.');
+    }
+
+    function changeScenario() {
+      resetSimulation();
+      const val = document.getElementById('scenario-select').value;
+      logHud(`Scenario switched to: ${val.toUpperCase()}`);
+    }
+
+    function setSimSpeed(speed) {
+      simSpeed = speed;
+      ['05', '1', '2'].forEach(s => {
+        const btn = document.getElementById(`speed-${s}`);
+        btn.className = 'px-1.5 py-0.5 text-[11px] rounded text-slate-400 hover:text-white font-mono-code';
+      });
+      const activeKey = speed === 0.5 ? '05' : String(speed);
+      document.getElementById(`speed-${activeKey}`).className = 'px-1.5 py-0.5 text-[11px] rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-mono-code font-bold';
+      logHud(`Simulation speed set to ${speed}x.`);
+    }
+
+    function runNextStep() {
+      if (!isSimulating) return;
+
+      const scenarioKey = document.getElementById('scenario-select').value;
+      const steps = currentProfile.steps[scenarioKey] || currentProfile.steps.primary;
+
+      if (currentStepIndex >= steps.length) {
+        logHud('Flow completed! Payload safely persisted into database.');
+        document.getElementById('hud-status').innerText = 'COMPLETE';
+        document.getElementById('hud-status').className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-bold border border-emerald-800';
+        playCyberSound('packet_success');
+        pauseSimulation();
+        return;
+      }
+
+      const step = steps[currentStepIndex];
+
+      document.querySelectorAll('.node-card').forEach(n => n.classList.remove('active-pulse'));
+      const activeEl = document.getElementById(`node-${step.node}`);
+      if (activeEl) activeEl.classList.add('active-pulse');
+
+      document.querySelectorAll('.pipeline-wire').forEach(w => w.classList.remove('active-wire'));
+      if (step.wire) {
+        const wireEl = document.getElementById(step.wire);
+        if (wireEl) wireEl.classList.add('active-wire');
+      }
+
+      logHud(step.hud);
+
+      if (step.payload) {
+        document.getElementById('hud-payload-box').classList.remove('hidden');
+        document.getElementById('hud-payload-json').innerText = JSON.stringify(step.payload, null, 2);
+      }
+
+      let packetColor = step.color || '#38bdf8';
+      let packetLabel = step.label || 'DATA';
+
+      if (step.node && failedNodes.has(step.node)) {
+        logHud(`[CHAOS FAULT] Node '${currentProfile.nodes[step.node]?.title || step.node}' is DOWN (HTTP 503)! Fallback route activated.`);
+        showToast(`💥 Node ${currentProfile.nodes[step.node]?.title || step.node} is DOWN! Rerouting data.`, 'error');
+        playCyberSound('chaos_alert');
+        packetColor = '#f43f5e';
+        packetLabel = 'ERR 503';
+      } else {
+        playCyberSound('packet_start');
+      }
+
+      // Animate packet along the exact wire geometry
+      if (step.wire) {
+        animatePacketAlongPath(step.wire, null, packetColor, packetLabel, step.reverse || false);
+      } else if (step.from && step.to) {
+        animatePacket(step.from, step.to);
+      }
+
+      if (step.action) {
+        step.action();
+      }
+
+      currentStepIndex++;
+      const delay = 2200 / simSpeed;
+      simTimer = setTimeout(runNextStep, delay);
+    }
+
+    function animatePacketAlongPath(wireId, onComplete, color = '#38bdf8', label = 'DATA', reverse = false) {
+      const pathEl = document.getElementById(wireId);
+      const svgCanvas = document.getElementById('svg-canvas');
+      if (!pathEl || !svgCanvas) {
+        if (onComplete) onComplete();
+        return;
+      }
+
+      const totalLength = pathEl.getTotalLength ? pathEl.getTotalLength() : 0;
+      if (totalLength === 0) {
+        if (onComplete) onComplete();
+        return;
+      }
+
+      const packetGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      packetGroup.innerHTML = `
+        <circle r="15" fill="${color}" opacity="0.3" filter="url(#glow-pulse)" />
+        <circle r="6.5" fill="${color}" filter="url(#glow-cyan)" />
+        <text y="-11" fill="${color}" font-size="10" font-family="'JetBrains Mono'" font-weight="bold" text-anchor="middle">${label}</text>
+      `;
+      svgCanvas.appendChild(packetGroup);
+
+      const startTime = performance.now();
+      const duration = 1200 / simSpeed;
+
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+
+        const actualProgress = reverse ? (1 - ease) : ease;
+        const pt = pathEl.getPointAtLength(actualProgress * totalLength);
+        packetGroup.setAttribute('transform', `translate(${pt.x}, ${pt.y})`);
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          packetGroup.remove();
+          if (onComplete) onComplete();
+        }
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    function animatePacket(from, to) {
+      const packetGroup = document.getElementById('animated-packet-group');
+      if (!packetGroup) return;
+      packetGroup.setAttribute('opacity', '1');
+
+      const startTime = performance.now();
+      const duration = 1200 / simSpeed;
+
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+
+        const currentX = from[0] + (to[0] - from[0]) * ease;
+        const currentY = from[1] + (to[1] - from[1]) * ease;
+
+        packetGroup.setAttribute('transform', `translate(${currentX}, ${currentY})`);
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        }
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    function runOmniAreaTest() {
+      resetSimulation();
+      logHud('⚡ INITIATING OMNI-AREA SYSTEM TEST: Testing all 10 nodes and all quadrants...');
+      document.getElementById('hud-status').innerText = 'TESTING ALL';
+      document.getElementById('hud-status').className = 'text-[10px] px-2 py-0.5 rounded bg-indigo-950 text-indigo-400 font-bold border border-indigo-800';
+
+      document.querySelectorAll('.node-card').forEach((n, idx) => {
+        setTimeout(() => {
+          n.classList.add('active-pulse');
+        }, idx * 100);
+      });
+
+      document.querySelectorAll('.pipeline-wire').forEach(w => w.classList.add('active-wire'));
+
+      const allWires = currentProfile.wires;
+      allWires.forEach((w, i) => {
+        setTimeout(() => {
+          animatePacketAlongPath(w.id, null, w.color || '#38bdf8', w.label || 'TEST');
+        }, i * 140);
+      });
+
+      setTimeout(() => {
+        commitNewRow('Omni-Area Grid Test', 'All Quadrants Active', '2026-10-05', '12:59 PM', currentProfile.dbTitle);
+        logHud('✓ OMNI-AREA VERIFICATION COMPLETE: All components (Top, Bottom, Left, Right, Center) verified active!');
+        document.getElementById('hud-status').innerText = 'ALL VERIFIED';
+        document.getElementById('hud-status').className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-bold border border-emerald-800';
+      }, allWires.length * 140 + 1300);
+    }
+
+    let isHudCollapsed = false;
+    let hudPositions = ['bottom-right', 'bottom-center', 'top-right'];
+    let currentHudPosIndex = 0;
+
+    function toggleHudCollapse() {
+      isHudCollapsed = !isHudCollapsed;
+      const content = document.getElementById('hud-body-content');
+      const btn = document.getElementById('btn-hud-collapse');
+      if (isHudCollapsed) {
+        content.classList.add('hidden');
+        btn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>';
+      } else {
+        content.classList.remove('hidden');
+        btn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>';
+      }
+    }
+
+    function toggleHudPosition() {
+      currentHudPosIndex = (currentHudPosIndex + 1) % hudPositions.length;
+      const pos = hudPositions[currentHudPosIndex];
+      const panel = document.getElementById('telemetry-panel');
+      panel.classList.remove('bottom-4', 'right-6', 'left-1/2', '-translate-x-1/2', 'top-16');
+
+      if (pos === 'bottom-right') {
+        panel.classList.add('bottom-4', 'right-6');
+        logHud('Docked telemetry HUD to Bottom-Right.');
+      } else if (pos === 'bottom-center') {
+        panel.classList.add('bottom-4', 'left-1/2', '-translate-x-1/2');
+        logHud('Docked telemetry HUD to Bottom-Center.');
+      } else {
+        panel.classList.add('top-16', 'right-6');
+        logHud('Docked telemetry HUD to Top-Right.');
+      }
+    }
+
+    function clearHudLog() {
+      document.getElementById('hud-log').innerHTML = '<div class="text-slate-500">> Console log cleared.</div>';
+    }
+
+    function logHud(msg) {
+      const logContainer = document.getElementById('hud-log');
+      const item = document.createElement('div');
+      item.className = 'text-cyan-300 font-mono-code leading-tight';
+      item.innerHTML = `<span class="text-slate-500">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+      logContainer.prepend(item);
+
+      const bannerText = document.getElementById('live-step-text');
+      if (bannerText) {
+        bannerText.innerText = msg;
+      }
+    }
+
+    // ================= NODE INSPECTOR =================
+    function inspectNode(key) {
+      if (isChaosMode) {
+        toggleNodeFailure(key);
+        return;
+      }
+
+      selectedNodeKey = key;
+      const data = currentProfile.nodes[key];
+      if (!data) return;
+
+      playCyberSound('click');
+
+      document.querySelectorAll('.node-card').forEach(n => n.classList.remove('selected'));
+      const activeEl = document.getElementById(`node-${key}`);
+      if (activeEl) activeEl.classList.add('selected');
+
+      document.querySelectorAll('.pipeline-wire').forEach(w => w.classList.remove('active-wire'));
+      currentProfile.wires.forEach(w => {
+        if (w.from === key || w.to === key) {
+          const wireEl = document.getElementById(w.id);
+          if (wireEl) wireEl.classList.add('active-wire');
+          animatePacketAlongPath(w.id, null, w.color || '#38bdf8', w.label || 'TEST');
+        }
+      });
+
+      document.getElementById('card-badge').innerText = data.badge;
+      document.getElementById('card-title').innerText = data.title;
+      document.getElementById('card-subtitle').innerText = data.subtitle;
+      document.getElementById('card-filepath').innerText = data.filepath;
+      document.getElementById('card-trust').innerHTML = `
+        <span class="w-2.5 h-2.5 rounded-full ${data.trust.includes('Untrusted') ? 'bg-amber-400' : 'bg-cyan-400'}"></span>
+        <span class="text-slate-300 font-medium">${data.trust}</span>
+      `;
+      document.getElementById('card-desc').innerText = data.desc;
+      document.getElementById('card-code').innerText = data.code;
+
+      updateInspectorChaosBtn();
+
+      const drawer = document.getElementById('detail-drawer');
+      drawer.classList.remove('translate-x-[430px]', 'opacity-0', 'pointer-events-none');
+    }
+
+    function closeInspector() {
+      const drawer = document.getElementById('detail-drawer');
+      drawer.classList.add('translate-x-[430px]', 'opacity-0', 'pointer-events-none');
+      document.querySelectorAll('.node-card').forEach(n => n.classList.remove('selected'));
+    }
+
+    function triggerSpecificNodeFlow() {
+      closeInspector();
+      resetSimulation();
+      startSimulation();
+    }
+
+    // ================= DATABASE MODAL & COMMITS =================
+    function toggleDbModal() {
+      const modal = document.getElementById('db-modal');
+      modal.classList.toggle('hidden');
+    }
+
+    function renderDbTable() {
+      const tbody = document.getElementById('db-table-body');
+      tbody.innerHTML = '';
+
+      currentProfile.records.forEach((rec) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-900/60 transition';
+        tr.innerHTML = `
+          <td class="p-3 text-cyan-400 font-bold">${rec.id}</td>
+          <td class="p-3 font-bold text-white">${rec.title}</td>
+          <td class="p-3 text-slate-300">${rec.meta}</td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${rec.status === 'confirmed' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-amber-950 text-amber-400 border border-amber-800'}">
+              ${rec.status.toUpperCase()}
+            </span>
+          </td>
+          <td class="p-3 text-teal-400 font-mono-code text-[11px]">${rec.engine}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('db-count-badge').innerText = currentProfile.records.length;
+    }
+
+    function commitNewRow(title, meta, date, time, engine) {
+      const newId = `rec-00${currentProfile.records.length + 1}`;
+      currentProfile.records.unshift({
+        id: newId,
+        title: title,
+        meta: `${meta} • ${time || 'Just Now'}`,
+        status: 'pending',
+        engine: engine
+      });
+      renderDbTable();
+      logHud(`DB COMMIT: Row ${newId} inserted into ${engine}.`);
+    }
+
+    function insertSampleRecord() {
+      commitNewRow('Direct Test Input', 'Manual Console Trigger', '2026-10-05', '12:50 PM', currentProfile.dbTitle);
+    }
+
+    // ================= DYNAMIC PROJECT UPLOADER & ANALYZER =================
+    function toggleUploadModal() {
+      const modal = document.getElementById('upload-modal');
+      modal.classList.toggle('hidden');
+    }
+
+    function setupDropZone() {
+      const dropZone = document.getElementById('drop-zone');
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-cyan-400', 'bg-cyan-950/20');
+      });
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('border-cyan-400', 'bg-cyan-950/20');
+      });
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-cyan-400', 'bg-cyan-950/20');
+        if (e.dataTransfer.files.length > 0) {
+          processProjectFiles(e.dataTransfer.files);
+        }
+      });
+    }
+
+    function handleFolderSelect(event) {
+      if (event.target.files.length > 0) {
+        processProjectFiles(event.target.files);
+      }
+    }
+
+    function handleSingleFileSelect(event) {
+      const file = event.target.files[0];
+      if (file && file.name.endsWith('.json')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const pkg = JSON.parse(e.target.result);
+            synthesizeCustomArchitectureFromPkg(pkg, file.name);
+          } catch (err) {
+            alert('Invalid JSON file.');
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    function processProjectFiles(files) {
+      logHud(`Scanning ${files.length} uploaded project files...`);
+      toggleUploadModal();
+
+      let foundPkg = null;
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].name === 'package.json') {
+          foundPkg = files[i];
+          break;
+        }
+      }
+
+      if (foundPkg) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const pkg = JSON.parse(e.target.result);
+            synthesizeCustomArchitectureFromPkg(pkg, foundPkg.webkitRelativePath || "Uploaded Folder");
+          } catch (err) {
+            synthesizeGenericArchitecture("Uploaded Project");
+          }
+        };
+        reader.readAsText(foundPkg);
+      } else {
+        synthesizeGenericArchitecture("Uploaded Project");
+      }
+    }
+
+    function synthesizeCustomArchitectureFromPkg(pkg, sourceName) {
+      const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+      const projectName = pkg.name || "Custom Uploaded App";
+      
+      logHud(`Parsed package.json for [${projectName}]. Synthesizing 3D runtime architecture...`);
+
+      const customKey = 'custom_uploaded';
+      ARCHITECTURE_PROFILES[customKey] = {
+        name: `${projectName} (Uploaded)`,
+        primaryPathText: `User Client → Edge Host → Application Layer → Database`,
+        dbTitle: deps['@supabase/supabase-js'] ? 'Supabase Postgres' : deps['firebase'] ? 'Firebase Firestore' : deps['@prisma/client'] ? 'Prisma PostgreSQL' : 'Database Layer',
+        tableName: 'records',
+        boundaries: [
+          {
+            id: "b-client",
+            label: "Untrusted Client Zone",
+            cssClass: "boundary-browser",
+            left: 425, top: 75, width: 370, height: 515,
+            color: "#f59e0b"
+          },
+          {
+            id: "b-cloud",
+            label: "Secured Backend & Storage Zone",
+            cssClass: "boundary-cloud",
+            left: 830, top: 75, width: 265, height: 360,
+            color: "#f43f5e"
+          }
+        ],
+        nodes: {
+          client_node: {
+            title: "Client User",
+            badge: "CLIENT",
+            subtitle: "Browser / Device",
+            x: 35, y: 310, width: 140,
+            trust: "Untrusted Client",
+            filepath: "Client Frontend Entrypoint",
+            desc: "End-user interacting with the uploaded application.",
+            code: `// Client user interaction\nfetch('/api/endpoint');`
+          },
+          admin_node: {
+            title: "Admin Console",
+            badge: "AUTH",
+            subtitle: "Privileged Session",
+            x: 255, y: 120, width: 140,
+            trust: "Authenticated Staff",
+            filepath: "Admin Dashboard / Auth Layer",
+            desc: "Administrative management portal.",
+            code: `// Admin operations\nverifyAuthToken();`
+          },
+          host_node: {
+            title: "Edge Gateway",
+            badge: "HOST",
+            subtitle: "CDN / Reverse Proxy",
+            x: 255, y: 310, width: 140,
+            trust: "Edge CDN / WAF",
+            filepath: "Edge Routing Config",
+            desc: "Directs client traffic to the application bundle.",
+            code: `// CDN Route Table\nproxy_pass http://app;`
+          },
+          ext_service: {
+            title: deps['@emailjs/browser'] ? "EmailJS" : deps['stripe'] ? "Stripe API" : "Cloud Services",
+            badge: "SAAS",
+            subtitle: "External Dependency",
+            x: 255, y: 480, width: 140,
+            trust: "External Cloud SaaS",
+            filepath: "Third-party SDK integration",
+            desc: "Third-party cloud service connected to the app.",
+            code: `// External service call\nawait cloudService.dispatch();`
+          },
+          auth_node: {
+            title: "Auth Gateway",
+            badge: "AUTH",
+            subtitle: "Identity Verification",
+            x: 450, y: 120, width: 130,
+            trust: "Client Auth Store",
+            filepath: "src/auth/provider.ts",
+            desc: "Authenticates sessions and stores bearer tokens.",
+            code: `// Auth validation\nconst token = getSession();`
+          },
+          app_node: {
+            title: deps['react'] ? "React App" : deps['next'] ? "Next.js App" : "App Runtime",
+            badge: "CORE",
+            subtitle: "Frontend Framework",
+            x: 450, y: 310, width: 130,
+            trust: "Untrusted Client Zone",
+            filepath: "Frontend core components",
+            desc: "Main presentation and client state layer.",
+            code: `// Main UI Component\nrenderApplication();`
+          },
+          api_layer: {
+            title: "API Layer",
+            badge: "API",
+            subtitle: "Data Client / SDK",
+            x: 640, y: 310, width: 130,
+            trust: "Untrusted Client Zone",
+            filepath: "src/api/client.ts",
+            desc: "Orchestrates API calls and data persistence.",
+            code: `// Data Client\nconst res = await apiClient.post('/data');`
+          },
+          local_cache: {
+            title: "Local Cache",
+            badge: "CACHE",
+            subtitle: "Client Storage",
+            x: 640, y: 500, width: 130,
+            trust: "Browser Sandbox",
+            filepath: "localStorage / IndexedDB",
+            desc: "Client-side fallback and persistent cache.",
+            code: `localStorage.setItem('cache', data);`
+          },
+          cloud_auth: {
+            title: "Cloud Auth",
+            badge: "SECURE",
+            subtitle: "IAM / Token Service",
+            x: 850, y: 120, width: 140,
+            trust: "Cloud Security Boundary",
+            filepath: "Cloud Identity Provider",
+            desc: "Verifies user roles and issues cryptographic access tokens.",
+            code: `// JWT Issuer\nverify(token, SECRET);`
+          },
+          cloud_db: {
+            title: deps['@supabase/supabase-js'] ? "Supabase DB" : "Primary Database",
+            badge: "STORE",
+            subtitle: "Persistent Data Store",
+            x: 850, y: 310, width: 140,
+            trust: "Protected Database Subnet",
+            filepath: "Cloud Database Instance",
+            desc: "Primary datastore storing application records with security policies.",
+            code: `// Insert Record\nINSERT INTO records VALUES (...);`
+          }
+        },
+        wires: [
+          { id: "w-c-host", from: "client_node", to: "host_node", label: "HTTPS", isPrimary: true, marker: "arrow-cyan" },
+          { id: "w-host-app", from: "host_node", to: "app_node", label: "bundle", isPrimary: true, marker: "arrow-cyan" },
+          { id: "w-app-api", from: "app_node", to: "api_layer", label: "dispatch", isPrimary: true, marker: "arrow-cyan" },
+          { id: "w-api-db", from: "api_layer", to: "cloud_db", label: "commit", isPrimary: true, marker: "arrow-cyan" },
+          { id: "w-app-ext", from: "app_node", to: "ext_service", label: "notify", isDashed: true, color: "#a855f7", marker: "arrow-purple" },
+          { id: "w-admin-auth", from: "admin_node", to: "auth_node", label: "login", marker: "arrow-gray" },
+          { id: "w-auth-api", from: "auth_node", to: "api_layer", label: "ops", color: "#38bdf8", marker: "arrow-cyan" },
+          { id: "w-auth-cloud", from: "auth_node", to: "cloud_auth", label: "verify", isDashed: true, color: "#f43f5e", marker: "arrow-rose" },
+          { id: "w-api-cache", from: "api_layer", to: "local_cache", label: "cache", isDashed: true, color: "#a855f7", marker: "arrow-purple" }
+        ],
+        steps: {
+          primary: [
+            { node: "client_node", hud: "Step 1/4: Client submits transaction payload.", payload: { app: projectName, action: "submit", timestamp: Date.now() }, wire: "w-c-host" },
+            { node: "host_node", hud: "Step 2/4: Edge Gateway proxies request to App Runtime.", wire: "w-host-app" },
+            { node: "app_node", hud: "Step 3/4: Application Layer processes logic and calls API Layer.", wire: "w-app-api" },
+            { node: "cloud_db", hud: "Step 4/4: Database commits new transaction row!", wire: "w-api-db", action: () => commitNewRow("Uploaded App Payload", "Transaction Successful", "2026-10-05", "12:52 PM", "Cloud Database") }
+          ],
+          admin: [
+            { node: "admin_node", hud: "Admin logs into system.", wire: "w-admin-auth" },
+            { node: "auth_node", hud: "Verifying credentials with cloud auth.", wire: "w-auth-cloud" },
+            { node: "api_layer", hud: "Admin queries core API layer.", wire: "w-auth-api", action: () => toggleDbModal() }
+          ],
+          fallback: [
+            { node: "client_node", hud: "Client requests cached data.", wire: "w-c-host" },
+            { node: "api_layer", hud: "Serving from local cache sandbox.", wire: "w-api-cache" },
+            { node: "local_cache", hud: "Cache HIT returned." }
+          ]
+        },
+        records: [
+          { id: "rec-custom-1", title: `${projectName} Record #1`, meta: "Initialized from Upload", status: "confirmed", engine: "Cloud Database" }
+        ]
+      };
+
+      const option = document.querySelector('option[value="custom_uploaded"]');
+      option.disabled = false;
+      option.textContent = `Custom: ${projectName}`;
+      
+      loadProfile(customKey);
+      showToast(`Analyzed ${projectName}! 3D Architecture ready.`, 'success');
+    }
+
+    function synthesizeGenericArchitecture(name) {
+      synthesizeCustomArchitectureFromPkg({ name: name, dependencies: { react: "^18.0.0" } }, name);
+    }
+
+    function analyzeGithubUrl() {
+      const url = document.getElementById('custom-repo-input').value;
+      toggleUploadModal();
+      logHud(`Connecting to GitHub repository: ${url}...`);
+
+      const repoParts = url.replace(/\/$/, '').split('/');
+      const repoName = repoParts[repoParts.length - 1] || "Analyzed Project";
+
+      setTimeout(() => {
+        synthesizeCustomArchitectureFromPkg({
+          name: repoName,
+          dependencies: {
+            "react": "^18.2.0",
+            "@supabase/supabase-js": "^2.39.0",
+            "@emailjs/browser": "^4.4.1"
+          }
+        }, url);
+      }, 1200);
+    }
+
+    // ================= AUDIO SYNTHESIZER (WEB AUDIO API) =================
+    let audioCtx = null;
+    let isAudioMuted = false;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function toggleAudio() {
+      isAudioMuted = !isAudioMuted;
+      document.getElementById('sound-icon-on').classList.toggle('hidden', isAudioMuted);
+      document.getElementById('sound-icon-off').classList.toggle('hidden', !isAudioMuted);
+      showToast(isAudioMuted ? 'Cyber Audio: Muted' : 'Cyber Audio: Enabled', 'info');
+      if (!isAudioMuted) playCyberSound('click');
+    }
+
+    function playCyberSound(type) {
+      if (isAudioMuted) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, now);
+          osc.frequency.exponentialRampToValueAtTime(400, now + 0.05);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        } else if (type === 'packet_start') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(640, now + 0.15);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        } else if (type === 'packet_success') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.08);
+          osc.frequency.setValueAtTime(783.99, now + 0.16);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'chaos_alert') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(140, now + 0.1);
+          osc.frequency.linearRampToValueAtTime(220, now + 0.2);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'heal') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.25);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        }
+      } catch (e) {}
+    }
+
+    // ================= CHAOS ENGINEERING ENGINE =================
+    let isChaosMode = false;
+    let failedNodes = new Set();
+
+    function toggleChaosMode() {
+      isChaosMode = !isChaosMode;
+      const btn = document.getElementById('btn-chaos-mode');
+      const banner = document.getElementById('chaos-banner');
+      
+      if (isChaosMode) {
+        btn.classList.add('bg-rose-600', 'text-white', 'border-rose-400');
+        btn.classList.remove('bg-rose-950/80', 'text-rose-300');
+        banner.classList.remove('hidden');
+        showToast('💥 Chaos Mode Activated: Click any node to inject outage', 'error');
+        playCyberSound('chaos_alert');
+      } else {
+        btn.classList.remove('bg-rose-600', 'text-white', 'border-rose-400');
+        btn.classList.add('bg-rose-950/80', 'text-rose-300');
+        banner.classList.add('hidden');
+        healAllNodes();
+        showToast('Chaos Mode Deactivated: Normal operations restored', 'info');
+      }
+    }
+
+    function toggleNodeFailure(nodeKey) {
+      const el = document.getElementById(`node-${nodeKey}`);
+      if (!el) return;
+      if (failedNodes.has(nodeKey)) {
+        failedNodes.delete(nodeKey);
+        el.classList.remove('failed-node');
+        const badge = el.querySelector('.chaos-badge');
+        if (badge) badge.remove();
+        showToast(`Healed node: ${currentProfile.nodes[nodeKey]?.title || nodeKey}`, 'success');
+        playCyberSound('heal');
+      } else {
+        failedNodes.add(nodeKey);
+        el.classList.add('failed-node');
+        if (!el.querySelector('.chaos-badge')) {
+          const b = document.createElement('div');
+          b.className = 'chaos-badge absolute -top-2.5 -right-2 px-1.5 py-0.5 rounded-full bg-rose-600 text-white font-mono-code font-bold text-[9px] shadow-lg animate-bounce pointer-events-none z-30';
+          b.innerText = '503 OUTAGE';
+          el.appendChild(b);
+        }
+        showToast(`Injected Outage into: ${currentProfile.nodes[nodeKey]?.title || nodeKey}`, 'error');
+        logHud(`[CHAOS FAULT] Outage simulated on ${nodeKey}. HTTP 503 Service Unavailable.`);
+        playCyberSound('chaos_alert');
+      }
+      updateInspectorChaosBtn();
+    }
+
+    function toggleSelectedNodeFailure() {
+      if (!selectedNodeKey) return;
+      toggleNodeFailure(selectedNodeKey);
+    }
+
+    function updateInspectorChaosBtn() {
+      const btn = document.getElementById('card-chaos-btn');
+      if (!btn) return;
+      if (selectedNodeKey && failedNodes.has(selectedNodeKey)) {
+        btn.className = 'w-full py-1.5 px-3 rounded-lg bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 font-bold text-xs transition flex items-center justify-center gap-1.5';
+        btn.innerHTML = '<span>✨ Restore / Heal Node</span>';
+      } else {
+        btn.className = 'w-full py-1.5 px-3 rounded-lg bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 font-bold text-xs transition flex items-center justify-center gap-1.5';
+        btn.innerHTML = '<span>💥 Simulate Node Outage (Chaos 503)</span>';
+      }
+    }
+
+    function healAllNodes() {
+      failedNodes.forEach(key => {
+        const el = document.getElementById(`node-${key}`);
+        if (el) {
+          el.classList.remove('failed-node');
+          const badge = el.querySelector('.chaos-badge');
+          if (badge) badge.remove();
+        }
+      });
+      failedNodes.clear();
+      showToast('All nodes restored to healthy 200 OK state', 'success');
+      logHud('[RECOVERY] Self-healing sequence executed. Cluster status: HEALTHY.');
+      playCyberSound('heal');
+      updateInspectorChaosBtn();
+    }
+
+    // ================= HIGH LOAD SURGE (STRESS TEST) =================
+    let isSurgeActive = false;
+    let surgeInterval = null;
+
+    function toggleSurgeMode() {
+      isSurgeActive = !isSurgeActive;
+      const btn = document.getElementById('speed-surge');
+      if (isSurgeActive) {
+        btn.classList.add('bg-amber-500', 'text-slate-950');
+        showToast('⚡ High-Load Surge Active: 500 req/sec stress test', 'warning');
+        logHud('[SURGE TEST] Initiating burst traffic stream: 500 req/sec...');
+        playCyberSound('packet_start');
+        
+        surgeInterval = setInterval(() => {
+          if (!isSurgeActive) return;
+          const wires = currentProfile.wires;
+          if (wires && wires.length > 0) {
+            const randomWire = wires[Math.floor(Math.random() * wires.length)];
+            const colors = ['#38bdf8', '#c084fc', '#34d399', '#f59e0b'];
+            const randColor = colors[Math.floor(Math.random() * colors.length)];
+            animatePacketAlongPath(randomWire.id, null, randColor, 'SURGE');
+            
+            if (Math.random() > 0.65) {
+              commitNewRow(`User_${Math.floor(Math.random()*9000 + 1000)}`, "Streaming Transaction Event", new Date().toISOString().slice(0,10), "Live", currentProfile.dbTitle);
+            }
+          }
+        }, 320);
+      } else {
+        btn.classList.remove('bg-amber-500', 'text-slate-950');
+        clearInterval(surgeInterval);
+        showToast('High-load surge stopped', 'info');
+      }
+    }
+
+    // ================= FINOPS & APM LATENCY LOGIC =================
+    function openFinOpsModal() {
+      document.getElementById('finops-modal').classList.remove('hidden');
+      playCyberSound('click');
+    }
+    function closeFinOpsModal() {
+      document.getElementById('finops-modal').classList.add('hidden');
+    }
+
+    function updateFinOpsScale(val) {
+      const scaleMultiplier = val / 10;
+      const baseCost = 148;
+      const totalCost = Math.round(baseCost * (0.6 + scaleMultiplier * 0.4));
+      const p95Latency = Math.max(18, Math.round(38 + (scaleMultiplier - 1) * 3));
+      
+      document.getElementById('finops-total-cost').innerText = `$${totalCost}.00`;
+      document.getElementById('header-cost-val').innerText = `$${totalCost}/mo`;
+      document.getElementById('finops-annual-cost').innerText = `Projected Annual: $${(totalCost * 12).toLocaleString()}/yr`;
+      document.getElementById('finops-p95-latency').innerText = `${p95Latency} ms`;
+      
+      let closestText = `${(val * 100).toLocaleString()} req/day`;
+      if (val <= 5) closestText = "10k req/day (Light Dev)";
+      else if (val <= 20) closestText = "100k req/day (Moderate Production)";
+      else if (val <= 60) closestText = "1M req/day (High Traffic Growth)";
+      else closestText = "10M req/day (Hyperscale Enterprise)";
+      
+      document.getElementById('finops-req-display').innerText = closestText;
+      document.getElementById('finops-db-cost').innerText = `$${Math.round(25 * (0.5 + scaleMultiplier * 0.5))}.00`;
+      document.getElementById('finops-mail-cost').innerText = `$${Math.round(15 * (0.5 + scaleMultiplier * 0.5))}.00`;
+    }
+
+    // ================= ARCHITECTURE EXPORT SUITE =================
+    function toggleExportMenu() {
+      const menu = document.getElementById('export-dropdown-menu');
+      if (menu) menu.classList.toggle('hidden');
+    }
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('export-dropdown-menu');
+      if (menu && !menu.contains(e.target) && !e.target.closest('button[onclick="toggleExportMenu()"]')) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    function downloadDockerCompose() {
+      toggleExportMenu();
+      const yamlContent = `version: '3.8'
+
+# Runtime3D Auto-Generated Infrastructure Blueprint
+# Generated for: ${currentProfile.name}
+# Timestamp: ${new Date().toISOString()}
+
+services:
+  # Primary Database Engine
+  postgres:
+    image: postgres:15-alpine
+    container_name: runtime3d-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: runtime_admin
+      POSTGRES_PASSWORD: secure_runtime_vault_pass
+      POSTGRES_DB: app_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U runtime_admin -d app_database"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # In-Memory Cache & Distributed Queue
+  redis:
+    image: redis:7-alpine
+    container_name: runtime3d-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+
+  # Client Application & API Runtime
+  app:
+    image: node:18-alpine
+    container_name: runtime3d-app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://runtime_admin:secure_runtime_vault_pass@postgres:5432/app_database
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  redisdata:
+`;
+      const blob = new Blob([yamlContent], { type: 'text/yaml' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'docker-compose.yml';
+      a.click();
+      showToast('Downloaded docker-compose.yml!', 'success');
+      playCyberSound('packet_success');
+    }
+
+    function downloadArchMarkdown() {
+      toggleExportMenu();
+      let md = `# Architecture Specification: ${currentProfile.name}\n\n`;
+      md += `> Auto-generated by Runtime3D on ${new Date().toLocaleDateString()}\n\n`;
+      md += `## 1. Primary Network Path\n\`${currentProfile.primaryPathText}\`\n\n`;
+      md += `## 2. Core Components (Nodes)\n\n`;
+      Object.entries(currentProfile.nodes).forEach(([key, n]) => {
+        md += `### ${n.title} (${n.badge})\n`;
+        md += `- **Trust Boundary**: ${n.trust}\n`;
+        md += `- **File / Source**: \`${n.filepath}\`\n`;
+        md += `- **Description**: ${n.desc}\n\n`;
+      });
+      md += `## 3. Trust Boundaries\n\n`;
+      currentProfile.boundaries.forEach(b => {
+        md += `- **${b.label}** (ID: \`${b.id}\`)\n`;
+      });
+      
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'ARCHITECTURE.md';
+      a.click();
+      showToast('Downloaded ARCHITECTURE.md spec!', 'success');
+      playCyberSound('packet_success');
+    }
+
+    function exportDiagramPng() {
+      toggleExportMenu();
+      try {
+        const svg = document.getElementById('svg-canvas');
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const URLObj = window.URL || window.webkitURL || window;
+        const blobURL = URLObj.createObjectURL(svgBlob);
+        
+        const a = document.createElement('a');
+        a.href = blobURL;
+        a.download = 'architecture-diagram.svg';
+        a.click();
+        showToast('Downloaded high-resolution SVG diagram!', 'success');
+        playCyberSound('packet_success');
+      } catch (err) {
+        showToast('Error capturing diagram: ' + err.message, 'error');
+      }
+    }
+  </script>
+</body>
+</html>

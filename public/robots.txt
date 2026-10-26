@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap Location for Googlebot and Bingbot
+Sitemap: https://runtime3d.vercel.app/sitemap.xml

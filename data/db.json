@@ -1,0 +1,142 @@
+{
+  "users": [
+    {
+      "id": "usr-001",
+      "username": "alex_architect",
+      "email": "alex@archflow.dev",
+      "password": "password123",
+      "role": "Lead Architect",
+      "createdAt": "2026-10-20T10:15:00.000Z",
+      "lastLogin": "2026-10-26T16:38:30.408Z",
+      "architecturesCount": 3
+    },
+    {
+      "id": "usr-002",
+      "username": "system_admin",
+      "email": "admin@runtime3d.io",
+      "password": "admin2026",
+      "role": "Admin",
+      "createdAt": "2026-10-15T08:00:00.000Z",
+      "lastLogin": "2026-10-26T16:04:02.205Z",
+      "architecturesCount": 5
+    },
+    {
+      "id": "usr-003",
+      "username": "sarah_cloud",
+      "email": "sarah@cloudops.org",
+      "password": "password123",
+      "role": "Cloud DevOps Engineer",
+      "createdAt": "2026-10-22T14:20:00.000Z",
+      "lastLogin": "2026-10-26T18:10:00.000Z",
+      "architecturesCount": 2
+    }
+  ],
+  "history": [
+    {
+      "id": "snap-001",
+      "userId": "usr-001",
+      "username": "alex_architect",
+      "name": "Full-Stack Web App (React + Supabase RLS)",
+      "profileKey": "reference_app",
+      "componentsCount": 10,
+      "conduitsCount": 10,
+      "stack": [
+        "React 18",
+        "Supabase",
+        "EmailJS",
+        "Vercel"
+      ],
+      "createdAt": "2026-10-26T19:40:00.000Z",
+      "isAutoSaved": false,
+      "description": "Baseline deployment architecture with Browser Trust Boundary and Supabase RLS."
+    },
+    {
+      "id": "snap-002",
+      "userId": "usr-001",
+      "username": "alex_architect",
+      "name": "E-Commerce Microservices Cloud Snapshot",
+      "profileKey": "microservices_app",
+      "componentsCount": 10,
+      "conduitsCount": 9,
+      "stack": [
+        "Next.js 14",
+        "Prisma",
+        "Redis",
+        "Stripe API",
+        "PostgreSQL"
+      ],
+      "createdAt": "2026-10-25T16:20:00.000Z",
+      "isAutoSaved": true,
+      "description": "Multi-tier microservices pipeline with Redis inventory lock and Stripe payment intents."
+    },
+    {
+      "id": "snap-003",
+      "userId": "usr-003",
+      "username": "sarah_cloud",
+      "name": "Kubernetes Ingress Cluster Model",
+      "profileKey": "microservices_app",
+      "componentsCount": 10,
+      "conduitsCount": 9,
+      "stack": [
+        "Envoy Proxy",
+        "Fastify",
+        "Redis",
+        "Cloudflare WAF"
+      ],
+      "createdAt": "2026-10-26T17:50:00.000Z",
+      "isAutoSaved": false,
+      "description": "Private VPC cluster topology with mutual TLS encryption."
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "log-mvphdpue",
+      "timestamp": "2026-10-26T16:38:30.422Z",
+      "username": "alex_architect",
+      "action": "USER_LOGIN",
+      "details": "Logged in successfully. Role: Lead Architect"
+    },
+    {
+      "id": "log-mvpg5e02",
+      "timestamp": "2026-10-26T16:04:02.210Z",
+      "username": "system_admin",
+      "action": "USER_LOGIN",
+      "details": "Logged in successfully. Role: Admin"
+    },
+    {
+      "id": "log-001",
+      "timestamp": "2026-10-26T20:45:10.000Z",
+      "username": "system_admin",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin accessed Runtime3D System Governance Console."
+    },
+    {
+      "id": "log-002",
+      "timestamp": "2026-10-26T19:40:00.000Z",
+      "username": "alex_architect",
+      "action": "SNAPSHOT_CREATED",
+      "details": "Created snapshot 'Full-Stack Web App (React + Supabase RLS)'"
+    },
+    {
+      "id": "log-003",
+      "timestamp": "2026-10-26T19:30:00.000Z",
+      "username": "alex_architect",
+      "action": "USER_LOGIN",
+      "details": "User authenticated successfully from IP 192.168.1.45."
+    },
+    {
+      "id": "log-004",
+      "timestamp": "2026-10-26T18:10:00.000Z",
+      "username": "sarah_cloud",
+      "action": "SIMULATION_RUN",
+      "details": "Executed 3D Omni-Area Pipeline Test across all 10 nodes."
+    },
+    {
+      "id": "log-005",
+      "timestamp": "2026-10-26T17:50:00.000Z",
+      "username": "sarah_cloud",
+      "action": "SNAPSHOT_CREATED",
+      "details": "Created snapshot 'Kubernetes Ingress Cluster Model'"
+    }
+  ]
+}
