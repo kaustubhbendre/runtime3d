@@ -4,12 +4,22 @@ const path = require('path');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
-const DATA_DIR = path.join(__dirname, 'data');
+const DATA_DIR = process.env.VERCEL ? path.join('/tmp', 'data') : path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
+const SEED_DB_FILE = path.join(__dirname, 'data', 'db.json');
 
 // Ensure directories exist
 if (!fs.existsSync(PUBLIC_DIR)) fs.mkdirSync(PUBLIC_DIR, { recursive: true });
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+
+// Copy seed database to /tmp on serverless environments
+if (process.env.VERCEL && !fs.existsSync(DB_FILE) && fs.existsSync(SEED_DB_FILE)) {
+  try {
+    fs.copyFileSync(SEED_DB_FILE, DB_FILE);
+  } catch (e) {
+    console.error('Error copying seed db.json:', e);
+  }
+}
 
 // Initialize database file if missing
 function loadDb() {
@@ -347,4 +357,8 @@ server.on('error', (err) => {
   }
 });
 
-startServer(currentPort);
+if (require.main === module) {
+  startServer(currentPort);
+}
+
+module.exports = server;

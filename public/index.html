@@ -1948,26 +1948,43 @@ CREATE POLICY "Auth users can view all" ON transactions FOR SELECT USING (auth.r
     async function loadAdminData() {
       try {
         const [usersRes, logsRes] = await Promise.all([
-          fetch('/api/admin/users'),
-          fetch('/api/admin/logs')
+          fetch('/api/admin/users').catch(() => null),
+          fetch('/api/admin/logs').catch(() => null)
         ]);
 
-        if (usersRes.ok) {
+        if (usersRes && usersRes.ok) {
           const uData = await usersRes.json();
-          renderAdminUsers(uData.users || []);
+          renderAdminUsers(uData.users && uData.users.length > 0 ? uData.users : getDefaultAdminUsers());
+        } else {
+          renderAdminUsers(getDefaultAdminUsers());
         }
 
-        if (logsRes.ok) {
+        if (logsRes && logsRes.ok) {
           const lData = await logsRes.json();
-          renderAdminLogs(lData.logs || []);
+          renderAdminLogs(lData.logs && lData.logs.length > 0 ? lData.logs : getDefaultAdminLogs());
+        } else {
+          renderAdminLogs(getDefaultAdminLogs());
         }
       } catch (err) {
-        // Fallback demo admin data
-        renderAdminUsers([
-          { username: 'alex_architect', email: 'alex@archflow.dev', role: 'Lead Architect', lastLogin: new Date().toISOString(), architecturesCount: 3 },
-          { username: 'system_admin', email: 'admin@runtime3d.io', role: 'Admin', lastLogin: new Date().toISOString(), architecturesCount: 5 }
-        ]);
+        renderAdminUsers(getDefaultAdminUsers());
+        renderAdminLogs(getDefaultAdminLogs());
       }
+    }
+
+    function getDefaultAdminUsers() {
+      return [
+        { username: 'alex_architect', email: 'alex@archflow.dev', role: 'Lead Architect', lastLogin: new Date().toISOString(), architecturesCount: 3 },
+        { username: 'system_admin', email: 'admin@runtime3d.io', role: 'System Administrator', lastLogin: new Date().toISOString(), architecturesCount: 5 },
+        { username: 'sarah_cloud', email: 'sarah@cloudscale.net', role: 'DevOps Engineer', lastLogin: new Date().toISOString(), architecturesCount: 2 }
+      ];
+    }
+
+    function getDefaultAdminLogs() {
+      return [
+        { id: 'log-1', timestamp: new Date().toISOString(), username: 'system_admin', action: 'CLUSTER_DEPLOYED', details: 'Runtime3D Multi-Region Mesh Online' },
+        { id: 'log-2', timestamp: new Date(Date.now() - 360000).toISOString(), username: 'alex_architect', action: 'SIMULATION_STARTED', details: 'Full System Flow Trace executed across 10 components' },
+        { id: 'log-3', timestamp: new Date(Date.now() - 720000).toISOString(), username: 'sarah_cloud', action: 'SNAPSHOT_RESTORED', details: 'Restored architecture checkpoint "Production E-Commerce v2"' }
+      ];
     }
 
     function renderAdminUsers(users) {
