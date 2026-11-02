@@ -186,7 +186,9 @@ const server = http.createServer(async (req, res) => {
   // 2. User Login
   if (req.method === 'POST' && pathname === '/api/auth/login') {
     try {
-      const { credential, password } = await parseJsonBody(req);
+      const body = await parseJsonBody(req);
+      const credential = body.credential || body.username || body.email;
+      const password = body.password;
       if (!credential || !password) {
         return sendJson(res, 400, { success: false, error: 'Please enter your username/email and password.' });
       }
